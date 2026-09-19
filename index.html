@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yunari OS // Helifax Studios</title>
+    <title>Yunari OS // Cosmic Desktop</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
@@ -13,66 +13,158 @@
             overflow: hidden;
             font-family: 'Segoe UI', system-ui, sans-serif;
             color: #ECEFF4;
-            background: #0d0b18;
+            background: #0f0d19;
         }
 
-        /* Ambient Background */
-        .os-background {
+        /* Shifting Galaxy Gradient Background */
+        .galaxy-background {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, #1e1b4b, #0f0d19, #311042);
-            z-index: -1;
+            background: linear-gradient(135deg, #d8b4fe, #9333ea, #1e1b4b, #311042);
+            background-size: 400% 400%;
+            animation: shiftGradient 18s ease infinite;
+            z-index: 0;
         }
 
-        /* OS Workspace Container */
-        .os-workspace {
+        @keyframes shiftGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Starfield Layer */
+        .starfield {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .star {
+            position: absolute;
+            background: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.8), 0 0 20px 6px rgba(216, 180, 252, 0.6);
+            animation: twinkle var(--duration) ease-in-out infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.3; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* Cosmic Desktop Orbit Area */
+        .cosmic-desktop {
             position: relative;
             width: 100vw;
             height: 100vh;
-            padding: 40px 40px 100px 40px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 20px;
-            overflow-y: auto;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-bottom: 80px;
         }
 
-        /* Glassmorphism App Windows */
-        .os-window {
-            background: rgba(20, 17, 35, 0.65);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-            padding: 20px;
+        /* Planetary / Stellar Info Orbs */
+        .celestial-node {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            background: radial-gradient(circle at 30% 30%, rgba(216, 180, 252, 0.4), rgba(76, 29, 149, 0.8) 70%, rgba(15, 13, 25, 0.9));
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 50%;
             display: flex;
             flex-direction: column;
-            min-height: 280px;
-            transition: transform 0.3s ease, border-color 0.3s ease;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 0 30px rgba(147, 51, 234, 0.4), inset 0 0 15px rgba(216, 180, 252, 0.3);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+            animation: floatOrb 6s ease-in-out infinite alternate;
         }
 
-        .os-window:hover {
-            border-color: rgba(216, 180, 252, 0.4);
-            transform: translateY(-2px);
+        .celestial-node:hover {
+            transform: scale(1.15);
+            box-shadow: 0 0 50px rgba(216, 180, 252, 0.8), inset 0 0 25px rgba(255, 255, 255, 0.6);
+            border-color: rgba(255, 255, 255, 0.6);
+            z-index: 10;
         }
 
-        .window-header {
+        /* Unique Orbit Positions for each node */
+        #nodeProjects { top: 22%; left: 18%; animation-delay: 0s; }
+        #nodeTelemetry { top: 25%; right: 18%; animation-delay: 2s; }
+        #nodeLore { bottom: 25%; left: 38%; animation-delay: 4s; width: 200px; height: 200px; }
+
+        @keyframes floatOrb {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-12px) rotate(3deg); }
+        }
+
+        .node-title {
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: #f3e8ff;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+            margin-bottom: 4px;
+        }
+
+        .node-subtitle {
+            font-size: 0.75rem;
+            color: #d8b4fe;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+        }
+
+        /* Detail Modal Popup (When clicking a planet/orb) */
+        .planet-modal {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: 550px;
+            max-width: 90vw;
+            background: rgba(15, 13, 28, 0.85);
+            border: 1px solid rgba(216, 180, 252, 0.4);
+            border-radius: 20px;
+            backdrop-filter: blur(24px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(147, 51, 234, 0.3);
+            padding: 30px;
+            z-index: 300;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .planet-modal.active {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+            pointer-events: auto;
+        }
+
+        .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            padding-bottom: 8px;
-            font-size: 0.95rem;
-            font-weight: bold;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
             color: #d8b4fe;
-            letter-spacing: 0.5px;
+            font-weight: bold;
         }
 
-        .window-content {
-            flex-grow: 1;
-            font-size: 0.9rem;
+        .modal-close {
+            background: transparent;
+            border: none;
             color: #cbd5e1;
-            line-height: 1.5;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            font-size: 0.95rem;
+            color: #cbd5e1;
+            line-height: 1.6;
         }
 
         /* Floating Rounded Bottom Taskbar */
@@ -124,7 +216,7 @@
         }
 
         .os-start-btn span {
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             font-weight: bold;
             color: #fff;
         }
@@ -156,7 +248,7 @@
             left: 50%;
             transform: translateX(-50%) scale(0.95);
             width: 440px;
-            height: 520px;
+            height: 480px;
             background: rgba(15, 13, 28, 0.85);
             border: 1px solid rgba(216, 180, 252, 0.3);
             border-radius: 20px;
@@ -177,7 +269,6 @@
             pointer-events: auto;
         }
 
-        /* Search Bar */
         .launcher-search {
             width: 100%;
             padding: 12px 18px;
@@ -188,22 +279,14 @@
             font-size: 0.95rem;
             outline: none;
             margin-bottom: 20px;
-            transition: border-color 0.3s ease;
         }
 
-        .launcher-search:focus {
-            border-color: rgba(216, 180, 252, 0.6);
-            box-shadow: 0 0 10px rgba(216, 180, 252, 0.2);
-        }
-
-        /* App List Section */
         .launcher-apps {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
             gap: 10px;
             overflow-y: auto;
-            padding-right: 4px;
         }
 
         .launcher-item {
@@ -224,23 +307,7 @@
             transform: translateX(4px);
         }
 
-        .launcher-item-icon {
-            font-size: 1.2rem;
-        }
-
-        .launcher-item-info h4 {
-            font-size: 0.95rem;
-            color: #f3e8ff;
-            font-weight: 600;
-        }
-
-        .launcher-item-info p {
-            font-size: 0.8rem;
-            color: #94a3b8;
-        }
-
-        /* Yunari Grip Avatar (Appears and anchors to the right edge of menu) */
-        .yunari-grip-avatar {
+        .launcher-grip-avatar {
             position: absolute;
             top: -30px;
             right: -45px;
@@ -253,16 +320,9 @@
             z-index: 210;
         }
 
-        .os-launcher-menu.active .yunari-grip-avatar {
+        .os-launcher-menu.active .launcher-grip-avatar {
             opacity: 1;
             transform: scale(1) translateY(0);
-        }
-
-        .yunari-grip-avatar img, .yunari-grip-avatar div {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.6));
         }
 
         .yunari-placeholder-badge {
@@ -282,112 +342,130 @@
 </head>
 <body>
 
-    <div class="os-background"></div>
+    <div class="galaxy-background"></div>
+    <div class="starfield" id="starfield"></div>
 
-    <!-- OS Workspace Grid -->
-    <div class="os-workspace">
-        <div class="os-window">
-            <div class="window-header"><span>// RECOVERED ARTIFACTS</span><span>[PROJECTS]</span></div>
-            <div class="window-content">
-                Custom 2D platformers built in Unity URP, Blender 3D character rigs, and flight simulation hardware configurations.
-            </div>
+    <!-- Cosmic Desktop Orbit Nodes (Planets / Stellar Orbs) -->
+    <div class="cosmic-desktop">
+        <div class="celestial-node" id="nodeProjects" onclick="openPlanet('projects')">
+            <div class="node-title">PROJECTS</div>
+            <div class="node-subtitle">Artifacts & Code</div>
         </div>
 
-        <div class="os-window">
-            <div class="window-header"><span>// SYSTEM TELEMETRY</span><span>[LIVE STATUS]</span></div>
-            <div class="window-content">
-                Synchronizing with live GitHub data pipeline (`data.json`). Status: Operating normally on Nobara Linux.
-            </div>
+        <div class="celestial-node" id="nodeTelemetry" onclick="openPlanet('telemetry')">
+            <div class="node-title">TELEMETRY</div>
+            <div class="node-subtitle">Live Hub Status</div>
         </div>
 
-        <div class="os-window">
-            <div class="window-header"><span>// LORE FRAGMENT</span><span>[ARCHIVE 01]</span></div>
-            <div class="window-content">
-                "In the outer sectors where starlight fades, the remnants of the old network whisper across the void..."
-            </div>
+        <div class="celestial-node" id="nodeLore" onclick="openPlanet('lore')">
+            <div class="node-title">LORE ARCHIVE</div>
+            <div class="node-subtitle">Yunari's Universe</div>
+        </div>
+    </div>
+
+    <!-- Planet Detail Modal Overlay -->
+    <div class="planet-modal" id="planetModal">
+        <div class="modal-header">
+            <span id="modalTitle">// PLANET DATA</span>
+            <button class="modal-close" onclick="closePlanet()">[X]</button>
+        </div>
+        <div class="modal-body" id="modalBody">
+            Loading sector telemetry...
         </div>
     </div>
 
     <!-- Floating Rounded Taskbar -->
     <div class="os-taskbar">
-        <!-- Yunari Start Button / Menu Toggle -->
         <button class="os-start-btn" onclick="toggleLauncher()" title="Yunari OS Menu">
             <span>Y</span>
         </button>
-        
-        <!-- Dock App Shortcuts -->
-        <div class="taskbar-icon" title="Projects">📁</div>
-        <div class="taskbar-icon" title="Astral Map" onclick="toggleWorldMap()">🗺️</div>
-        <div class="taskbar-icon" title="Terminal">💻</div>
+        <div class="taskbar-icon" title="Projects Orbit" onclick="openPlanet('projects')">🪐</div>
+        <div class="taskbar-icon" title="Astral World Map">🗺️</div>
+        <div class="taskbar-icon" title="Telemetry Feed" onclick="openPlanet('telemetry')">📡</div>
     </div>
 
     <!-- OS Launcher Start Menu -->
     <div class="os-launcher-menu" id="osLauncherMenu">
-        <!-- Yunari Gripping / Leaning on the Menu Edge -->
-        <div class="yunari-grip-avatar">
+        <div class="launcher-grip-avatar">
             <div class="yunari-placeholder-badge">YUNARI</div>
-            <!-- Once commissioned, replace div with: <img src="yunari-grip.png" alt="Yunari"> -->
         </div>
 
-        <input type="text" class="launcher-search" placeholder="Search system archives, projects, lore..." oninput="filterApps(this)">
+        <input type="text" class="launcher-search" placeholder="Search cosmic sectors..." oninput="filterLauncher(this)">
         
         <div class="launcher-apps" id="launcherAppsList">
-            <div class="launcher-item" onclick="alert('Opening Projects...')">
-                <div class="launcher-item-icon">🚀</div>
-                <div class="launcher-item-info">
-                    <h4>Project Artifacts</h4>
-                    <p>Unity games, Blender 3D art, and flight sims</p>
-                </div>
+            <div class="launcher-item" onclick="openPlanet('projects'); toggleLauncher();">
+                <div>🚀</div>
+                <div><h4>Project Artifacts</h4><p>Unity games, Blender 3D, and flight sims</p></div>
             </div>
-            <div class="launcher-item" onclick="toggleWorldMap()">
-                <div class="launcher-item-icon">✨</div>
-                <div class="launcher-item-info">
-                    <h4>Astral World Map</h4>
-                    <p>Explore Yunari's home world and book lore</p>
-                </div>
-            </div>
-            <div class="launcher-item" onclick="alert('Opening Terminal...')">
-                <div class="launcher-item-icon">⚡</div>
-                <div class="launcher-item-info">
-                    <h4>GitHub Live Telemetry</h4>
-                    <p>View real-time updates from `data.json` pipeline</p>
-                </div>
-            </div>
-            <div class="launcher-item" onclick="alert('Opening Audio Logs...')">
-                <div class="launcher-item-icon">🎵</div>
-                <div class="launcher-item-info">
-                    <h4>Audio Logs & Ambient Stream</h4>
-                    <p>Manage background soundtrack and playlists</p>
-                </div>
+            <div class="launcher-item" onclick="openPlanet('lore'); toggleLauncher();">
+                <div>✨</div>
+                <div><h4>Astral Lore Archive</h4><p>Explore Yunari's home world and story nodes</p>
+            </div></div>
+            <div class="launcher-item" onclick="openPlanet('telemetry'); toggleLauncher();">
+                <div>⚡</div>
+                <div><h4>Live Telemetry</h4><p>Real-time updates from Nobara data pipeline</p></div>
             </div>
         </div>
     </div>
 
     <script>
-        // Toggle OS Start Menu & Yunari Grip Animation
+        // Starfield Generator
+        const starfield = document.getElementById('starfield');
+        for (let i =0; i < 75; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = `${Math.random() * 100}vw`;
+            star.style.top = `${Math.random() * 100}vh`;
+            const size = `${Math.random() * 2.5 + 1.5}px`;
+            star.style.width = size;
+            star.style.height = size;
+            star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
+            starfield.appendChild(star);
+        }
+
+        // Toggle OS Start Menu
         function toggleLauncher() {
-            const menu = document.getElementById('osLauncherMenu');
-            menu.classList.toggle('active');
+            document.getElementById('osLauncherMenu').classList.toggle('active');
         }
 
-        // Live Search Filter for Menu Items
-        function filterApps(input) {
-            const query = input.value.toLowerCase();
-            const items = document.querySelectorAll('.launcher-item');
+        // Planet Modal Content Handler
+        const planetData = {
+            projects: {
+                title: "// SECTOR: PROJECT ARTIFACTS",
+                content: "Displaying your C# Avalonia desktop tools, Unity URP 2D platformers, and Microsoft Flight Simulator emergency procedure setups. Click any artifact to inspect source code and build packages."
+            },
+            telemetry: {
+                title: "// SECTOR: LIVE SYSTEM TELEMETRY",
+                content: "Synchronizing directly with GitHub REST API pipeline (`data.json`). Operating environment: Nobara Linux (KDE Plasma/Wayland). Status: Optimal."
+            },
+            lore: {
+                title: "// SECTOR: LORE ARCHIVE // YUNARI'S UNIVERSE",
+                content: "\"In the outer sectors where starlight fades, the network remembers everything.\" Explore deep-dive book chapters, character notes, and regional maps of Yunari's home world."
+            }
+        };
+
+        function openPlanet(type) {
+            const modal = document.getElementById('planetModal');
+            const titleEl = document.getElementById('modalTitle');
+            const bodyEl = document.getElementById('modalBody');
             
-            items.forEach(item => {
-                const text = item.innerText.toLowerCase();
-                if (text.includes(query)) {
-                    item.style.display = 'flex';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
+            if (planetData[type]) {
+                titleEl.innerText = planetData[type].title;
+                bodyEl.innerText = planetData[type].content;
+                modal.classList.add('active');
+            }
         }
 
-        // Placeholder function for Astral Map
-        function toggleWorldMap() {
-            alert("Opening Astral World Map Overlay...");
+        function closePlanet() {
+            document.getElementById('planetModal').classList.remove('active');
+        }
+
+        // Launcher search filter
+        function filterLauncher(input) {
+            const query = input.value.toLowerCase();
+            document.querySelectorAll('.launcher-item').forEach(item => {
+                item.style.display = item.innerText.toLowerCase().includes(query) ? 'flex' : 'none';
+            });
         }
     </script>
 </body>
