@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Helifax Studios // Gateway Diagnostics</title>
+    <title>Helifax Studios // Gateway</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
@@ -13,17 +13,17 @@
             overflow: hidden;
             font-family: 'Segoe UI', system-ui, sans-serif;
             color: #ECEFF4;
-            background: #1e1b4b;
+            background: transparent; /* Clear body background so layers shine through */
         }
 
-        /* Shifting Galaxy Gradient Background */
+        /* Shifting Galaxy Gradient Background (Layer 0) */
         .galaxy-background {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, #d8b4fe, #9333ea, #1e1b4b, #311042);
             background-size: 400% 400%;
             animation: shiftGradient 18s ease infinite;
-            z-index: -2;
+            z-index: 0;
         }
 
         @keyframes shiftGradient {
@@ -32,12 +32,12 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Starfield Container */
+        /* Starfield Container (Layer 1) */
         .starfield {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none;
-            z-index: -1;
+            z-index: 1;
             transition: transform 1s cubic-bezier(0.55, 0.085, 0.68, 0.53), opacity 1s ease;
             transform-origin: center center;
         }
@@ -61,8 +61,10 @@
             100% { opacity: 1; transform: scale(1.3); }
         }
 
-        /* Gateway Overlay */
+        /* Gateway Overlay Container (Layer 2) */
         .gateway-container {
+            position: relative;
+            z-index: 2;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -115,6 +117,7 @@
             box-shadow: 0 0 35px rgba(192, 132, 252, 0.9), inset 0 0 15px rgba(255, 255, 255, 0.6);
         }
 
+        /* Button Charging State */
         .enter-btn.charging {
             transform: scale(1.25);
             background: rgba(255, 255, 255, 1);
@@ -123,7 +126,7 @@
             border-color: #ffffff;
         }
 
-        /* Blinding White Flash Overlay */
+        /* Blinding White Flash Overlay (Layer 100) */
         .flash-overlay {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -157,21 +160,12 @@
     </div>
 
     <script>
-        console.log("[Script Parse] HTML parser reached script block.");
-
         window.addEventListener('DOMContentLoaded', () => {
-            console.log("[DOM Event] DOMContentLoaded fired successfully.");
+            console.log("[Gateway] Initializing visual layers correctly...");
 
-            // Verify starfield container
             const container = document.getElementById('starfieldContainer');
-            if (!container) {
-                console.error("[DOM Error] #starfieldContainer element was NOT found in the document!");
-            } else {
-                console.log("[DOM Success] #starfieldContainer acquired.");
-            }
-
-            // Generate star elements
             const starCount = 95;
+
             for (let i = 0; i < starCount; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
@@ -187,7 +181,7 @@
                     container.appendChild(star);
                 }
             }
-            console.log(`[Starfield Generator] Successfully injected ${starCount} star nodes into container. Container children count: ${container ? container.children.length : 'N/A'}`);
+            console.log(`[Starfield Generator] Successfully rendered ${starCount} stars.`);
 
             // Rotating Quotes Engine
             const quotes = [
@@ -196,11 +190,9 @@
                 "\"Every horizon is just a starting line.\""
             ];
             let currentQuote = 0;
-            console.log("[Quotes Engine] Initialized.");
             
             const quoteInterval = setInterval(() => {
                 currentQuote = (currentQuote + 1) % quotes.length;
-                console.log(`[Quotes Engine] Cycling to quote index: ${currentQuote}`);
                 const quoteEl = document.getElementById('quote-display');
                 if (quoteEl) {
                     quoteEl.style.opacity = 0;
@@ -208,22 +200,18 @@
                         quoteEl.innerText = quotes[currentQuote];
                         quoteEl.style.opacity = 1;
                     }, 500);
-                } else {
-                    console.warn("[Quotes Warning] #quote-display element missing.");
                 }
             }, 6000);
 
             // Enter Action
             window.enterSite = function() {
-                console.log("[User Interaction] 'Enter' button clicked! enterSite() executing...");
+                console.log("[User Interaction] Enter clicked. Running transition sequence.");
                 clearInterval(quoteInterval);
 
                 const audio = document.getElementById('bg-music');
                 if (audio) {
-                    audio.play().then(() => {
-                        console.log("[Audio] Playback started.");
-                    }).catch(err => {
-                        console.warn("[Audio Warning] Playback blocked or file missing (expected if 404):", err);
+                    audio.play().catch(err => {
+                        console.warn("[Audio] Playback skipped or file missing:", err);
                     });
                 }
 
@@ -233,29 +221,16 @@
                 const starfieldContainer = document.getElementById('starfieldContainer');
 
                 if (quoteBox) quoteBox.style.opacity = 0;
-                if (btn) {
-                    btn.classList.add('charging');
-                    console.log("[Animation] Added 'charging' class to Enter button.");
-                }
-
-                if (starfieldContainer) {
-                    starfieldContainer.classList.add('converging');
-                    console.log("[Animation] Added 'converging' class to starfield container.");
-                }
+                if (btn) btn.classList.add('charging');
+                if (starfieldContainer) starfieldContainer.classList.add('converging');
 
                 setTimeout(() => {
-                    if (flashOverlay) {
-                        flashOverlay.classList.add('active');
-                        console.log("[Animation] Blinding white flash overlay activated.");
-                    }
+                    if (flashOverlay) flashOverlay.classList.add('active');
                 }, 850);
 
                 setTimeout(() => {
                     const gateway = document.getElementById('gateway');
-                    if (gateway) {
-                        gateway.style.display = 'none';
-                        console.log("[Animation] Gateway container hidden. Sequence complete.");
-                    }
+                    if (gateway) gateway.style.display = 'none';
                 }, 1250);
             };
         });
