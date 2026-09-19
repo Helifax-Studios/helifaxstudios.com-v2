@@ -13,7 +13,7 @@
             overflow: hidden;
             font-family: 'Segoe UI', system-ui, sans-serif;
             color: #ECEFF4;
-            background: transparent; /* Clear body background so layers shine through */
+            background: transparent;
         }
 
         /* Shifting Galaxy Gradient Background (Layer 0) */
@@ -38,22 +38,22 @@
             top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none;
             z-index: 1;
-            transition: transform 1s cubic-bezier(0.55, 0.085, 0.68, 0.53), opacity 1s ease;
-            transform-origin: center center;
         }
 
-        .starfield.converging {
-            transform: scale(0);
-            opacity: 0;
-        }
-
-        /* Individual Star Styling */
+        /* Individual Star Styling with Wave Stagger Support */
         .star {
             position: absolute;
             background: #ffffff;
             border-radius: 50%;
             box-shadow: 0 0 12px 3px rgba(255, 255, 255, 0.95), 0 0 24px 8px rgba(216, 180, 252, 0.8);
             animation: twinkle var(--duration) ease-in-out infinite alternate;
+            /* Slower transition duration (1.8s) with dynamic delay for the wave effect */
+            transition: transform 1.8s cubic-bezier(0.25, 1, 0.5, 1) var(--delay, 0s), opacity 1.8s ease var(--delay, 0s);
+        }
+
+        .star.converging {
+            transform: translate(calc(50vw - var(--pos-x)), calc(50vh - var(--pos-y))) scale(0);
+            opacity: 0;
         }
 
         @keyframes twinkle {
@@ -107,7 +107,7 @@
             cursor: pointer;
             backdrop-filter: blur(8px);
             box-shadow: 0 0 20px rgba(161, 131, 199, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.3);
-            transition: all 0.3s ease, box-shadow 1s ease, transform 1s ease, background 1s ease;
+            transition: all 0.3s ease, box-shadow 1.8s ease, transform 1.8s ease, background 1.8s ease;
             z-index: 10;
         }
 
@@ -122,7 +122,7 @@
             transform: scale(1.25);
             background: rgba(255, 255, 255, 1);
             color: #1e1b4b;
-            box-shadow: 0 0 100px 40px rgba(255, 255, 255, 0.95), inset 0 0 40px rgba(147, 51, 234, 0.95);
+            box-shadow: 0 0 120px 45px rgba(255, 255, 255, 0.95), inset 0 0 40px rgba(147, 51, 234, 0.95);
             border-color: #ffffff;
         }
 
@@ -134,7 +134,7 @@
             opacity: 0;
             pointer-events: none;
             z-index: 100;
-            transition: opacity 0.4s cubic-bezier(0.1, 0.9, 0.2, 1);
+            transition: opacity 0.5s cubic-bezier(0.1, 0.9, 0.2, 1);
         }
 
         .flash-overlay.active {
@@ -161,17 +161,30 @@
 
     <script>
         window.addEventListener('DOMContentLoaded', () => {
-            console.log("[Gateway] Initializing visual layers correctly...");
-
             const container = document.getElementById('starfieldContainer');
-            const starCount = 95;
+            const starCount = 100;
 
             for (let i = 0; i < starCount; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
-                star.style.left = `${Math.random() * 100}vw`;
-                star.style.top = `${Math.random() * 100}vh`;
                 
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                
+                star.style.left = `${x}vw`;
+                star.style.top = `${y}vh`;
+                
+                // Store position variables for clean CSS translation math
+                star.style.setProperty('--pos-x', `${x}vw`);
+                star.style.setProperty('--pos-y', `${y}vh`);
+
+                // Calculate distance from center (50, 50) to create the wave stagger effect
+                const dx = x - 50;
+                const dy = y - 50;
+                const distance = Math.sqrt(dx * dx + dy * dy); // roughly 0 to 70
+                const waveDelay = (distance / 70) * 0.75; // Inner stars move instantly, outer stars lag up to 0.75s
+                star.style.setProperty('--delay', `${waveDelay}s`);
+
                 const size = `${Math.random() * 3 + 1.5}px`;
                 star.style.width = size;
                 star.style.height = size;
@@ -181,7 +194,6 @@
                     container.appendChild(star);
                 }
             }
-            console.log(`[Starfield Generator] Successfully rendered ${starCount} stars.`);
 
             // Rotating Quotes Engine
             const quotes = [
@@ -205,7 +217,6 @@
 
             // Enter Action
             window.enterSite = function() {
-                console.log("[User Interaction] Enter clicked. Running transition sequence.");
                 clearInterval(quoteInterval);
 
                 const audio = document.getElementById('bg-music');
@@ -218,20 +229,27 @@
                 const btn = document.getElementById('enterBtn');
                 const quoteBox = document.getElementById('quoteBox');
                 const flashOverlay = document.getElementById('flashOverlay');
-                const starfieldContainer = document.getElementById('starfieldContainer');
 
                 if (quoteBox) quoteBox.style.opacity = 0;
                 if (btn) btn.classList.add('charging');
-                if (starfieldContainer) starfieldContainer.classList.add('converging');
 
+                // Trigger individual star convergence with the wave delay staggered
+                const starNodes = document.querySelectorAll('.star');
+                starNodes.forEach(star => {
+                    star.style.animation = 'none'; // stop twinkling during flight
+                    star.classList.add('converging');
+                });
+
+                // Trigger the white flash right as the wave reaches its climax
                 setTimeout(() => {
                     if (flashOverlay) flashOverlay.classList.add('active');
-                }, 850);
+                }, 1700);
 
+                // Hide gateway container after flash peak
                 setTimeout(() => {
                     const gateway = document.getElementById('gateway');
                     if (gateway) gateway.style.display = 'none';
-                }, 1250);
+                }, 2200);
             };
         });
     </script>
