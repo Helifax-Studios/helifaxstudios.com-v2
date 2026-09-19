@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Helifax Studios // Gateway</title>
+    <title>Helifax Studios // Gateway Diagnostics</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
@@ -16,14 +16,52 @@
             background: #1e1b4b;
         }
 
-        /* Unified Canvas Layer for Gradient, Stars, and Animations */
-        #coreCanvas {
+        /* Shifting Galaxy Gradient Background */
+        .galaxy-background {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
+            background: linear-gradient(135deg, #d8b4fe, #9333ea, #1e1b4b, #311042);
+            background-size: 400% 400%;
+            animation: shiftGradient 18s ease infinite;
+            z-index: -2;
         }
 
-        /* Gateway Overlay Container */
+        @keyframes shiftGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Starfield Container */
+        .starfield {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            transition: transform 1s cubic-bezier(0.55, 0.085, 0.68, 0.53), opacity 1s ease;
+            transform-origin: center center;
+        }
+
+        .starfield.converging {
+            transform: scale(0);
+            opacity: 0;
+        }
+
+        /* Individual Star Styling */
+        .star {
+            position: absolute;
+            background: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 0 12px 3px rgba(255, 255, 255, 0.95), 0 0 24px 8px rgba(216, 180, 252, 0.8);
+            animation: twinkle var(--duration) ease-in-out infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.3; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1.3); }
+        }
+
+        /* Gateway Overlay */
         .gateway-container {
             display: flex;
             flex-direction: column;
@@ -32,7 +70,7 @@
             height: 100vh;
             text-align: center;
             padding: 20px;
-            background: rgba(15, 13, 25, 0.2);
+            background: rgba(15, 13, 25, 0.15);
             backdrop-filter: blur(2px);
             transition: opacity 0.5s ease;
         }
@@ -50,7 +88,7 @@
             font-weight: 300;
             font-style: italic;
             letter-spacing: 0.5px;
-            text-shadow: 0 2px 12px rgba(0,0,0,0.7);
+            text-shadow: 0 2px 12px rgba(0,0,0,0.8);
             color: #f3e8ff;
         }
 
@@ -77,7 +115,6 @@
             box-shadow: 0 0 35px rgba(192, 132, 252, 0.9), inset 0 0 15px rgba(255, 255, 255, 0.6);
         }
 
-        /* Button Charging State */
         .enter-btn.charging {
             transform: scale(1.25);
             background: rgba(255, 255, 255, 1);
@@ -104,8 +141,8 @@
 </head>
 <body>
 
-    <!-- Unified Canvas handles gradient background and stars -->
-    <canvas id="coreCanvas"></canvas>
+    <div class="galaxy-background"></div>
+    <div class="starfield" id="starfieldContainer"></div>
     <div class="flash-overlay" id="flashOverlay"></div>
 
     <audio id="bg-music" loop>
@@ -120,124 +157,108 @@
     </div>
 
     <script>
-        const canvas = document.getElementById('coreCanvas');
-        const ctx = canvas.getContext('2d');
+        console.log("[Script Parse] HTML parser reached script block.");
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log("[DOM Event] DOMContentLoaded fired successfully.");
 
-        // Gradient animation variables
-        let gradientProgress = 0;
+            // Verify starfield container
+            const container = document.getElementById('starfieldContainer');
+            if (!container) {
+                console.error("[DOM Error] #starfieldContainer element was NOT found in the document!");
+            } else {
+                console.log("[DOM Success] #starfieldContainer acquired.");
+            }
 
-        // Starfield setup
-        const stars = [];
-        const starCount = 90;
-        let isConverging = false;
+            // Generate star elements
+            const starCount = 95;
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = `${Math.random() * 100}vw`;
+                star.style.top = `${Math.random() * 100}vh`;
+                
+                const size = `${Math.random() * 3 + 1.5}px`;
+                star.style.width = size;
+                star.style.height = size;
+                star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
+                
+                if (container) {
+                    container.appendChild(star);
+                }
+            }
+            console.log(`[Starfield Generator] Successfully injected ${starCount} star nodes into container. Container children count: ${container ? container.children.length : 'N/A'}`);
 
-        for (let i = 0; i < starCount; i++) {
-            stars.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                radius: Math.random() * 2.2 + 1.2,
-                alpha: Math.random() * 0.7 + 0.3,
-                twinkleSpeed: Math.random() * 0.02 + 0.008
-            });
-        }
-
-        function renderFrame() {
-            // 1. Draw Shifting Galaxy Gradient Background
-            gradientProgress += 0.002;
-            const x1 = canvas.width * (0.5 + Math.sin(gradientProgress) * 0.5);
-            const y1 = canvas.height * (0.5 + Math.cos(gradientProgress * 0.8) * 0.5);
+            // Rotating Quotes Engine
+            const quotes = [
+                "\"Life without death is one without a purpose.\"",
+                "\"Creation is just ordering chaos into a melody.\"",
+                "\"Every horizon is just a starting line.\""
+            ];
+            let currentQuote = 0;
+            console.log("[Quotes Engine] Initialized.");
             
-            const grad = ctx.createLinearGradient(x1, y1, canvas.width - x1, canvas.height - y1);
-            grad.addColorStop(0, '#d8b4fe'); // Light lavender
-            grad.addColorStop(0.35, '#9333ea'); // Purple
-            grad.addColorStop(0.7, '#1e1b4b'); // Dark blue
-            grad.addColorStop(1, '#311042'); // Deep nebula
-
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // 2. Draw and Animate Stars
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-
-            stars.forEach(star => {
-                if (isConverging) {
-                    // Pull stars rapidly toward the center button coordinates
-                    star.x += (centerX - star.x) * 0.12;
-                    star.y += (centerY - star.y) * 0.12;
+            const quoteInterval = setInterval(() => {
+                currentQuote = (currentQuote + 1) % quotes.length;
+                console.log(`[Quotes Engine] Cycling to quote index: ${currentQuote}`);
+                const quoteEl = document.getElementById('quote-display');
+                if (quoteEl) {
+                    quoteEl.style.opacity = 0;
+                    setTimeout(() => {
+                        quoteEl.innerText = quotes[currentQuote];
+                        quoteEl.style.opacity = 1;
+                    }, 500);
                 } else {
-                    // Natural twinkling
-                    star.alpha += star.twinkleSpeed;
-                    if (star.alpha > 1 || star.alpha < 0.25) {
-                        star.twinkleSpeed *= -1;
-                    }
+                    console.warn("[Quotes Warning] #quote-display element missing.");
+                }
+            }, 6000);
+
+            // Enter Action
+            window.enterSite = function() {
+                console.log("[User Interaction] 'Enter' button clicked! enterSite() executing...");
+                clearInterval(quoteInterval);
+
+                const audio = document.getElementById('bg-music');
+                if (audio) {
+                    audio.play().then(() => {
+                        console.log("[Audio] Playback started.");
+                    }).catch(err => {
+                        console.warn("[Audio Warning] Playback blocked or file missing (expected if 404):", err);
+                    });
                 }
 
-                ctx.beginPath();
-                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha})`;
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = 'rgba(216, 180, 252, 0.9)';
-                ctx.fill();
-            });
+                const btn = document.getElementById('enterBtn');
+                const quoteBox = document.getElementById('quoteBox');
+                const flashOverlay = document.getElementById('flashOverlay');
+                const starfieldContainer = document.getElementById('starfieldContainer');
 
-            requestAnimationFrame(renderFrame);
-        }
-        renderFrame();
+                if (quoteBox) quoteBox.style.opacity = 0;
+                if (btn) {
+                    btn.classList.add('charging');
+                    console.log("[Animation] Added 'charging' class to Enter button.");
+                }
 
-        // --- Rotating Quotes Engine ---
-        const quotes = [
-            "\"Life without death is one without a purpose.\"",
-            "\"Creation is just ordering chaos into a melody.\"",
-            "\"Every horizon is just a starting line.\""
-        ];
-        let currentQuote = 0;
-        const quoteInterval = setInterval(() => {
-            currentQuote = (currentQuote + 1) % quotes.length;
-            const quoteEl = document.getElementById('quote-display');
-            quoteEl.style.opacity = 0;
-            setTimeout(() => {
-                quoteEl.innerText = quotes[currentQuote];
-                quoteEl.style.opacity = 1;
-            }, 500);
-        }, 6000);
+                if (starfieldContainer) {
+                    starfieldContainer.classList.add('converging');
+                    console.log("[Animation] Added 'converging' class to starfield container.");
+                }
 
-        // --- Enter Action ---
-        function enterSite() {
-            clearInterval(quoteInterval);
-            const audio = document.getElementById('bg-music');
-            audio.play().catch(() => {});
+                setTimeout(() => {
+                    if (flashOverlay) {
+                        flashOverlay.classList.add('active');
+                        console.log("[Animation] Blinding white flash overlay activated.");
+                    }
+                }, 850);
 
-            const btn = document.getElementById('enterBtn');
-            const quoteBox = document.getElementById('quoteBox');
-            const flashOverlay = document.getElementById('flashOverlay');
-
-            // Fade out quote text
-            quoteBox.style.opacity = 0;
-
-            // Trigger button glow charging state
-            btn.classList.add('charging');
-
-            // Trigger canvas star vortex convergence
-            isConverging = true;
-
-            // Trigger blinding white flash after stars converge into the button
-            setTimeout(() => {
-                flashOverlay.classList.add('active');
-            }, 850);
-
-            // Clean up gateway view after flash hits peak
-            setTimeout(() => {
-                document.getElementById('gateway').style.display = 'none';
-            }, 1250);
-        }
+                setTimeout(() => {
+                    const gateway = document.getElementById('gateway');
+                    if (gateway) {
+                        gateway.style.display = 'none';
+                        console.log("[Animation] Gateway container hidden. Sequence complete.");
+                    }
+                }, 1250);
+            };
+        });
     </script>
 </body>
 </html>
