@@ -1,0 +1,174 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Helifax Studios // Gateway</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            color: #ECEFF4;
+        }
+
+        /* Shifting Galaxy Gradient Background */
+        .galaxy-background {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #d8b4fe, #9333ea, #1e1b4b, #311042);
+            background-size: 400% 400%;
+            animation: shiftGradient 18s ease infinite;
+            z-index: -2;
+        }
+
+        @keyframes shiftGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Starfield Layer */
+        .starfield {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 8px 2px rgba(255, 255, 255, 0.8), 0 0 15px 4px rgba(192, 132, 252, 0.6);
+            animation: twinkle var(--duration) ease-in-out infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.3; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* Gateway Overlay */
+        .gateway-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            padding: 20px;
+            background: rgba(15, 13, 25, 0.25);
+            backdrop-filter: blur(4px);
+        }
+
+        /* Quote Display */
+        .quote-box {
+            max-width: 600px;
+            margin-bottom: 40px;
+            min-height: 80px;
+            animation: fadeInOut 5s ease-in-out infinite;
+        }
+
+        .quote-text {
+            font-size: 1.4rem;
+            font-weight: 300;
+            font-style: italic;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            color: #f3e8ff;
+        }
+
+        /* Sparkling Enter Button */
+        .enter-btn {
+            position: relative;
+            padding: 14px 42px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #ffffff;
+            background: linear-gradient(135deg, rgba(161, 131, 199, 0.4), rgba(147, 51, 234, 0.6));
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 30px;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 0 20px rgba(161, 131, 199, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .enter-btn:hover {
+            transform: scale(1.06);
+            background: linear-gradient(135deg, rgba(161, 131, 199, 0.6), rgba(168, 85, 247, 0.8));
+            box-shadow: 0 0 30px rgba(192, 132, 252, 0.8), inset 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="galaxy-background"></div>
+    <div class="starfield" id="starfield"></div>
+
+    <!-- Hidden audio element for your gateway track -->
+    <audio id="bg-music" loop>
+        <source src="your-ambient-track.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="gateway-container" id="gateway">
+        <div class="quote-box">
+            <p class="quote-text" id="quote-display">"Life without death is one without a purpose."</p>
+        </div>
+        <button class="enter-btn" onclick="enterSite()">✨ Enter</button>
+    </div>
+
+    <script>
+        // Generate Starfield with Lens Flare Effect
+        const starfield = document.getElementById('starfield');
+        const starCount = 45;
+        for (let i = 0; i < starCount; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = `${Math.random() * 100}vw`;
+            star.style.top = `${Math.random() * 100}vh`;
+            const size = `${Math.random() * 3 + 2}px`;
+            star.style.width = size;
+            star.style.height = size;
+            star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
+            starfield.appendChild(star);
+        }
+
+        // Rotating Quotes Engine
+        const quotes = [
+            "\"Life without death is one without a purpose.\"",
+            "\"Creation is just ordering chaos into a melody.\"",
+            "\"Every horizon is just a starting line.\""
+        ];
+        let currentQuote = 0;
+        setInterval(() => {
+            currentQuote = (currentQuote + 1) % quotes.length;
+            const quoteEl = document.getElementById('quote-display');
+            quoteEl.style.opacity = 0;
+            setTimeout(() => {
+                quoteEl.innerText = quotes[currentQuote];
+                quoteEl.style.opacity = 1;
+            }, 500);
+        }, 6000);
+
+        // Enter action (Starts music and transitions to main hub)
+        function enterSite() {
+            const audio = document.getElementById('bg-music');
+            audio.play().catch(() => {}); // Fallback if browser blocks autoplay
+            
+            const gateway = document.getElementById('gateway');
+            gateway.style.transition = 'opacity 1s ease';
+            gateway.style.opacity = 0;
+            setTimeout(() => {
+                gateway.style.display = 'none';
+                // Load your main dashboard layout here!
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
