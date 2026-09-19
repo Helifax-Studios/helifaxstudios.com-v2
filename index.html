@@ -40,20 +40,20 @@
             z-index: 1;
         }
 
-        /* Individual Star Styling with Wave Stagger Support */
+        /* Individual Star Styling with Smoother, Slower Wave Transitions */
         .star {
             position: absolute;
             background: #ffffff;
             border-radius: 50%;
             box-shadow: 0 0 12px 3px rgba(255, 255, 255, 0.95), 0 0 24px 8px rgba(216, 180, 252, 0.8);
             animation: twinkle var(--duration) ease-in-out infinite alternate;
-            /* Slower transition duration (1.8s) with dynamic delay for the wave effect */
-            transition: transform 1.8s cubic-bezier(0.25, 1, 0.5, 1) var(--delay, 0s), opacity 1.8s ease var(--delay, 0s);
+            /* Slower 3.2s transition so you can appreciate the wave motion */
+            transition: transform 3.2s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s), opacity 3.2s ease var(--delay, 0s);
         }
 
         .star.converging {
-            transform: translate(calc(50vw - var(--pos-x)), calc(50vh - var(--pos-y))) scale(0);
-            opacity: 0;
+            transform: translate(calc(50vw - var(--pos-x)), calc(50vh - var(--pos-y))) scale(0.15);
+            opacity: 0.3; /* Keeps them visible longer during the inward sweep */
         }
 
         @keyframes twinkle {
@@ -107,7 +107,7 @@
             cursor: pointer;
             backdrop-filter: blur(8px);
             box-shadow: 0 0 20px rgba(161, 131, 199, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.3);
-            transition: all 0.3s ease, box-shadow 1.8s ease, transform 1.8s ease, background 1.8s ease;
+            transition: all 0.3s ease, box-shadow 3.2s ease, transform 3.2s ease, background 3.2s ease;
             z-index: 10;
         }
 
@@ -134,7 +134,7 @@
             opacity: 0;
             pointer-events: none;
             z-index: 100;
-            transition: opacity 0.5s cubic-bezier(0.1, 0.9, 0.2, 1);
+            transition: opacity 0.6s cubic-bezier(0.1, 0.9, 0.2, 1);
         }
 
         .flash-overlay.active {
@@ -154,7 +154,7 @@
 
     <div class="gateway-container" id="gateway">
         <div class="quote-box" id="quoteBox">
-            <p class="quote-text" id="quote-display">"Life without death is one without a purpose."</p>
+            <p class="quote-text" id="quote-display">Loading...</p>
         </div>
         <button class="enter-btn" id="enterBtn" onclick="enterSite()">Enter</button>
     </div>
@@ -174,15 +174,14 @@
                 star.style.left = `${x}vw`;
                 star.style.top = `${y}vh`;
                 
-                // Store position variables for clean CSS translation math
                 star.style.setProperty('--pos-x', `${x}vw`);
                 star.style.setProperty('--pos-y', `${y}vh`);
 
-                // Calculate distance from center (50, 50) to create the wave stagger effect
+                // Calculate distance from center for wave stagger effect
                 const dx = x - 50;
                 const dy = y - 50;
-                const distance = Math.sqrt(dx * dx + dy * dy); // roughly 0 to 70
-                const waveDelay = (distance / 70) * 0.75; // Inner stars move instantly, outer stars lag up to 0.75s
+                const distance = Math.sqrt(dx * dx + dy * dy); // 0 to ~70
+                const waveDelay = (distance / 70) * 1.1; // Wider delay spread for a distinct wave ripple
                 star.style.setProperty('--delay', `${waveDelay}s`);
 
                 const size = `${Math.random() * 3 + 1.5}px`;
@@ -195,17 +194,21 @@
                 }
             }
 
-            // Rotating Quotes Engine
+            // Rotating Quotes Engine with Random Start
             const quotes = [
-                "\"Life without death is one without a purpose.\"",
+                "\"A life without the fear of death isn't living.\"",
                 "\"Creation is just ordering chaos into a melody.\"",
                 "\"Every horizon is just a starting line.\""
             ];
-            let currentQuote = 0;
+            
+            let currentQuote = Math.floor(Math.random() * quotes.length);
+            const quoteEl = document.getElementById('quote-display');
+            if (quoteEl) {
+                quoteEl.innerText = quotes[currentQuote];
+            }
             
             const quoteInterval = setInterval(() => {
                 currentQuote = (currentQuote + 1) % quotes.length;
-                const quoteEl = document.getElementById('quote-display');
                 if (quoteEl) {
                     quoteEl.style.opacity = 0;
                     setTimeout(() => {
@@ -233,23 +236,23 @@
                 if (quoteBox) quoteBox.style.opacity = 0;
                 if (btn) btn.classList.add('charging');
 
-                // Trigger individual star convergence with the wave delay staggered
+                // Trigger wave convergence
                 const starNodes = document.querySelectorAll('.star');
                 starNodes.forEach(star => {
-                    star.style.animation = 'none'; // stop twinkling during flight
+                    star.style.animation = 'none'; 
                     star.classList.add('converging');
                 });
 
-                // Trigger the white flash right as the wave reaches its climax
+                // Trigger white flash right as the wave finishes sweeping inward
                 setTimeout(() => {
                     if (flashOverlay) flashOverlay.classList.add('active');
-                }, 1700);
+                }, 2800);
 
                 // Hide gateway container after flash peak
                 setTimeout(() => {
                     const gateway = document.getElementById('gateway');
                     if (gateway) gateway.style.display = 'none';
-                }, 2200);
+                }, 3400);
             };
         });
     </script>
