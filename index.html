@@ -40,20 +40,20 @@
             z-index: 1;
         }
 
-        /* Individual Star Styling with Smoother, Slower Wave Transitions */
+        /* Individual Star Styling with Smooth Wave Transitions */
         .star {
             position: absolute;
             background: #ffffff;
             border-radius: 50%;
             box-shadow: 0 0 12px 3px rgba(255, 255, 255, 0.95), 0 0 24px 8px rgba(216, 180, 252, 0.8);
             animation: twinkle var(--duration) ease-in-out infinite alternate;
-            /* Slower 3.2s transition so you can appreciate the wave motion */
+            /* Smooth 3.2s transition using pre-calculated pixel deltas */
             transition: transform 3.2s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s), opacity 3.2s ease var(--delay, 0s);
         }
 
         .star.converging {
-            transform: translate(calc(50vw - var(--pos-x)), calc(50vh - var(--pos-y))) scale(0.15);
-            opacity: 0.3; /* Keeps them visible longer during the inward sweep */
+            transform: translate(var(--dx), var(--dy)) scale(0.15);
+            opacity: 0.3;
         }
 
         @keyframes twinkle {
@@ -163,25 +163,23 @@
         window.addEventListener('DOMContentLoaded', () => {
             const container = document.getElementById('starfieldContainer');
             const starCount = 100;
+            const starData = [];
 
             for (let i = 0; i < starCount; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
                 
-                const x = Math.random() * 100;
-                const y = Math.random() * 100;
+                const x = Math.random() * 100; // percentage vw
+                const y = Math.random() * 100; // percentage vh
                 
                 star.style.left = `${x}vw`;
                 star.style.top = `${y}vh`;
-                
-                star.style.setProperty('--pos-x', `${x}vw`);
-                star.style.setProperty('--pos-y', `${y}vh`);
 
-                // Calculate distance from center for wave stagger effect
-                const dx = x - 50;
-                const dy = y - 50;
-                const distance = Math.sqrt(dx * dx + dy * dy); // 0 to ~70
-                const waveDelay = (distance / 70) * 1.1; // Wider delay spread for a distinct wave ripple
+                // Calculate distance from screen center for the wave delay effect
+                const dxCenter = x - 50;
+                const dyCenter = y - 50;
+                const distance = Math.sqrt(dxCenter * dxCenter + dyCenter * dyCenter);
+                const waveDelay = (distance / 70) * 1.1; 
                 star.style.setProperty('--delay', `${waveDelay}s`);
 
                 const size = `${Math.random() * 3 + 1.5}px`;
@@ -192,6 +190,8 @@
                 if (container) {
                     container.appendChild(star);
                 }
+
+                starData.push({ element: star, xPercent: x, yPercent: y });
             }
 
             // Rotating Quotes Engine with Random Start
@@ -236,14 +236,32 @@
                 if (quoteBox) quoteBox.style.opacity = 0;
                 if (btn) btn.classList.add('charging');
 
-                // Trigger wave convergence
-                const starNodes = document.querySelectorAll('.star');
-                starNodes.forEach(star => {
-                    star.style.animation = 'none'; 
-                    star.classList.add('converging');
+                // Dynamically find the exact center coordinates of the Enter button
+                const btnRect = btn.getBoundingClientRect();
+                const targetX = btnRect.left + btnRect.width / 2;
+                const targetY = btnRect.top + btnRect.height / 2;
+
+                // Calculate exact pixel delta for each star to land precisely on the button
+                starData.forEach(data => {
+                    const starX = (window.innerWidth * data.xPercent) / 100;
+                    const starY = (window.innerHeight * data.yPercent) / 100;
+                    const deltaX = targetX - starX;
+                    const deltaY = targetY - starY;
+
+                    data.element.style.setProperty('--dx', `${deltaX}px`);
+                    data.element.style.setProperty('--dy', `${deltaY}px`);
+                    data.element.style.animation = 'none'; // Stop twinkling during flight
                 });
 
-                // Trigger white flash right as the wave finishes sweeping inward
+                // Force browser reflow so the transition registers properly
+                void container.offsetWidth;
+
+                // Trigger smooth wave convergence into the button
+                starData.forEach(data => {
+                    data.element.classList.add('converging');
+                });
+
+                // Trigger the white flash right as the outer wave finishes sweeping in
                 setTimeout(() => {
                     if (flashOverlay) flashOverlay.classList.add('active');
                 }, 2800);
