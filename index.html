@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yunari OS // Cosmic Desktop</title>
+    <title>Helifax Studios // Gateway & Cosmic Desktop</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
@@ -13,7 +13,7 @@
             overflow: hidden;
             font-family: 'Segoe UI', system-ui, sans-serif;
             color: #ECEFF4;
-            background: #0f0d19;
+            background: transparent;
         }
 
         /* Shifting Galaxy Gradient Background */
@@ -44,32 +44,120 @@
             position: absolute;
             background: #ffffff;
             border-radius: 50%;
-            box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.8), 0 0 20px 6px rgba(216, 180, 252, 0.6);
+            box-shadow: 0 0 12px 3px rgba(255, 255, 255, 0.95), 0 0 24px 8px rgba(216, 180, 252, 0.8);
             animation: twinkle var(--duration) ease-in-out infinite alternate;
+            transition: transform 3.2s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s), opacity 3.2s ease var(--delay, 0s);
+        }
+
+        .star.converging {
+            transform: translate(var(--dx), var(--dy)) scale(0.15);
+            opacity: 0.3;
         }
 
         @keyframes twinkle {
             0% { opacity: 0.3; transform: scale(0.8); }
-            100% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1.3); }
         }
 
-        /* Cosmic Desktop Orbit Area */
-        .cosmic-desktop {
+        /* --- Phase 1: Gateway Start Page --- */
+        .gateway-container {
             position: relative;
-            width: 100vw;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             height: 100vh;
+            text-align: center;
+            padding: 20px;
+            background: rgba(15, 13, 25, 0.25);
+            backdrop-filter: blur(2px);
+            transition: opacity 0.5s ease;
+        }
+
+        .quote-box {
+            max-width: 600px;
+            margin-bottom: 40px;
+            min-height: 80px;
+            transition: opacity 0.5s ease;
+        }
+
+        .quote-text {
+            font-size: 1.4rem;
+            font-weight: 300;
+            font-style: italic;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.8);
+            color: #f3e8ff;
+        }
+
+        .enter-btn {
+            position: relative;
+            padding: 14px 42px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #ffffff;
+            background: linear-gradient(135deg, rgba(161, 131, 199, 0.4), rgba(147, 51, 234, 0.6));
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 30px;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 0 20px rgba(161, 131, 199, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease, box-shadow 3.2s ease, transform 3.2s ease, background 3.2s ease;
+            z-index: 10;
+        }
+
+        .enter-btn:hover {
+            transform: scale(1.08);
+            background: linear-gradient(135deg, rgba(161, 131, 199, 0.6), rgba(168, 85, 247, 0.85));
+            box-shadow: 0 0 35px rgba(192, 132, 252, 0.9), inset 0 0 15px rgba(255, 255, 255, 0.6);
+        }
+
+        .enter-btn.charging {
+            transform: scale(1.25);
+            background: rgba(255, 255, 255, 1);
+            color: #1e1b4b;
+            box-shadow: 0 0 120px 45px rgba(255, 255, 255, 0.95), inset 0 0 40px rgba(147, 51, 234, 0.95);
+            border-color: #ffffff;
+        }
+
+        /* Blinding White Flash Overlay */
+        .flash-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #ffffff;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 500;
+            transition: opacity 0.6s cubic-bezier(0.1, 0.9, 0.2, 1);
+        }
+
+        .flash-overlay.active {
+            opacity: 1;
+        }
+
+        /* --- Phase 2: Cosmic Desktop & Smaller Planets --- */
+        .cosmic-desktop {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: 2;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding-bottom: 80px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease;
         }
 
-        /* Planetary / Stellar Info Orbs */
+        .cosmic-desktop.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
         .celestial-node {
             position: absolute;
-            width: 170px;
-            height: 170px;
+            width: 125px;
+            height: 125px;
             background: radial-gradient(circle at 30% 30%, rgba(216, 180, 252, 0.4), rgba(76, 29, 149, 0.8) 70%, rgba(15, 13, 25, 0.9));
             border: 1px solid rgba(255, 255, 255, 0.25);
             border-radius: 50%;
@@ -78,60 +166,57 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 20px;
+            padding: 15px;
             cursor: pointer;
             backdrop-filter: blur(8px);
-            box-shadow: 0 0 30px rgba(147, 51, 234, 0.4), inset 0 0 15px rgba(216, 180, 252, 0.3);
+            box-shadow: 0 0 25px rgba(147, 51, 234, 0.4), inset 0 0 10px rgba(216, 180, 252, 0.3);
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
             animation: floatOrb 6s ease-in-out infinite alternate;
         }
 
         .celestial-node:hover {
             transform: scale(1.15);
-            box-shadow: 0 0 50px rgba(216, 180, 252, 0.8), inset 0 0 25px rgba(255, 255, 255, 0.6);
+            box-shadow: 0 0 40px rgba(216, 180, 252, 0.8), inset 0 0 20px rgba(255, 255, 255, 0.6);
             border-color: rgba(255, 255, 255, 0.6);
             z-index: 10;
         }
 
-        /* Orbit Positions */
-        #nodeProjects { top: 20%; left: 15%; animation-delay: 0s; }
-        #nodeTelemetry { top: 22%; right: 15%; animation-delay: 2s; }
-        #nodeAudio { bottom: 25%; left: 18%; animation-delay: 3s; }
-        #nodeLore { bottom: 22%; right: 18%; animation-delay: 4s; width: 190px; height: 190px; }
+        #nodeProjects { top: 22%; left: 20%; animation-delay: 0s; }
+        #nodeTelemetry { top: 25%; right: 20%; animation-delay: 2s; }
+        #nodeLore { bottom: 28%; left: 42%; animation-delay: 4s; width: 140px; height: 140px; }
 
         @keyframes floatOrb {
             0% { transform: translateY(0) rotate(0deg); }
-            100% { transform: translateY(-12px) rotate(3deg); }
+            100% { transform: translateY(-10px) rotate(3deg); }
         }
 
         .node-title {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             font-weight: bold;
             color: #f3e8ff;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
-            margin-bottom: 4px;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.8);
+            margin-bottom: 2px;
         }
 
         .node-subtitle {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             color: #d8b4fe;
-            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
         }
 
-        /* Detail Modal Popup */
-        v { display: none; } /* placeholder */
+        /* Modal Popups */
         .planet-modal {
             position: fixed;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%) scale(0.9);
-            width: 550px;
+            width: 520px;
             max-width: 90vw;
             background: rgba(15, 13, 28, 0.9);
             border: 1px solid rgba(216, 180, 252, 0.4);
             border-radius: 20px;
             backdrop-filter: blur(24px);
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(147, 51, 234, 0.3);
-            padding: 30px;
+            padding: 25px;
             z-index: 300;
             opacity: 0;
             pointer-events: none;
@@ -148,63 +233,79 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 10px;
+            padding-bottom: 8px;
             color: #d8b4fe;
             font-weight: bold;
+            font-size: 0.9rem;
         }
 
         .modal-close {
             background: transparent;
             border: none;
             color: #cbd5e1;
-            font-size: 1.1rem;
+            font-size: 1rem;
             cursor: pointer;
         }
 
         .modal-body {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: #cbd5e1;
-            line-height: 1.6;
+            line-height: 1.5;
         }
 
-        /* Music Player Specific Styles Inside Modal */
-        .music-player-container {
+        /* --- Bottom-Right Audio Player Widget --- */
+        .audio-widget {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 280px;
+            background: rgba(20, 17, 35, 0.85);
+            border: 1px solid rgba(216, 180, 252, 0.25);
+            border-radius: 16px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(147, 51, 234, 0.2);
+            padding: 14px 18px;
+            z-index: 100;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 10px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s ease;
+        }
+
+        .audio-widget.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .audio-widget-top {
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            text-align: center;
         }
 
-        .track-info h3 {
-            font-size: 1.1rem;
+        .audio-title {
+            font-size: 0.8rem;
+            font-weight: bold;
             color: #f3e8ff;
-            margin-bottom: 4px;
         }
 
-        .track-info p {
-            font-size: 0.85rem;
-            color: #b892ff;
-        }
-
-        /* Soundwave Visualizer Bars */
         .soundwave {
             display: flex;
             align-items: flex-end;
-            gap: 4px;
-            height: 40px;
-            margin: 10px 0;
+            gap: 3px;
+            height: 24px;
         }
 
         .bar {
-            width: 5px;
+            width: 3px;
             background: #d8b4fe;
-            border-radius: 3px;
+            border-radius: 2px;
             animation: pulseBar 1.2s ease-in-out infinite alternate;
         }
-
         .bar:nth-child(2) { animation-delay: 0.2s; height: 60%; }
         .bar:nth-child(3) { animation-delay: 0.4s; height: 90%; }
         .bar:nth-child(4) { animation-delay: 0.1s; height: 40%; }
@@ -215,59 +316,65 @@
             100% { height: 100%; opacity: 1; }
         }
 
-        .player-controls {
+        .audio-controls {
             display: flex;
-            gap: 15px;
+            justify-content: space-between;
             align-items: center;
         }
 
-        .player-btn {
-            padding: 10px 24px;
+        .audio-status {
+            font-size: 0.7rem;
+            color: #b892ff;
+        }
+
+        .audio-btn {
+            padding: 5px 14px;
             background: linear-gradient(135deg, rgba(147, 51, 234, 0.6), rgba(216, 180, 252, 0.4));
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
             color: white;
+            font-size: 0.75rem;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.2s ease;
         }
 
-        .player-btn:hover {
-            transform: scale(1.05);
+        .audio-btn:hover {
             background: linear-gradient(135deg, rgba(147, 51, 234, 0.9), rgba(216, 180, 252, 0.7));
-            box-shadow: 0 0 15px rgba(216, 180, 252, 0.6);
         }
 
-        /* Floating Rounded Taskbar */
+        /* --- Floating Rounded Taskbar --- */
         .os-taskbar {
             position: fixed;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
             width: auto;
-            min-width: 320px;
-            height: 64px;
+            min-width: 280px;
+            height: 58px;
             background: rgba(20, 17, 35, 0.8);
             border: 1px solid rgba(216, 180, 252, 0.2);
-            border-radius: 32px;
+            border-radius: 29px;
             backdrop-filter: blur(16px);
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(147, 51, 234, 0.2);
             display: flex;
             align-items: center;
-            padding: 0 12px;
-            gap: 12px;
+            padding: 0 10px;
+            gap: 10px;
             z-index: 100;
-            animation: floatTaskbar 4s ease-in-out infinite alternate;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s ease;
         }
 
-        @keyframes floatTaskbar {
-            0% { transform: translateX(-50%) translateY(0); }
-            100% { transform: translateX(-50%) translateY(-4px); }
+        .os-taskbar.active {
+            opacity: 1;
+            pointer-events: auto;
         }
 
         .os-start-btn {
-            width: 48px;
-            height: 48px;
+            width: 42px;
+            height: 42px;
             background: linear-gradient(135deg, rgba(147, 51, 234, 0.6), rgba(216, 180, 252, 0.4));
             border: 1px solid rgba(255, 255, 255, 0.4);
             border-radius: 50%;
@@ -280,11 +387,11 @@
         }
 
         .os-start-btn:hover { transform: scale(1.1); }
-        .os-start-btn span { font-size: 0.8rem; font-weight: bold; color: #fff; }
+        .os-start-btn span { font-size: 0.75rem; font-weight: bold; color: #fff; }
 
         .taskbar-icon {
-            width: 42px;
-            height: 42px;
+            width: 38px;
+            height: 38px;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 50%;
@@ -292,7 +399,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.1rem;
+            font-size: 1rem;
             transition: all 0.2s ease;
         }
 
@@ -304,17 +411,17 @@
         /* OS Launcher Menu */
         .os-launcher-menu {
             position: fixed;
-            bottom: 96px;
+            bottom: 90px;
             left: 50%;
             transform: translateX(-50%) scale(0.95);
-            width: 440px;
-            height: 480px;
+            width: 400px;
+            height: 420px;
             background: rgba(15, 13, 28, 0.85);
             border: 1px solid rgba(216, 180, 252, 0.3);
             border-radius: 20px;
             backdrop-filter: blur(24px);
             box-shadow: 0 15px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(147, 51, 234, 0.25);
-            padding: 24px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             z-index: 200;
@@ -331,32 +438,32 @@
 
         .launcher-search {
             width: 100%;
-            padding: 12px 18px;
+            padding: 10px 14px;
             background: rgba(255, 255, 255, 0.06);
             border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 12px;
+            border-radius: 10px;
             color: #fff;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             outline: none;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .launcher-apps {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
             overflow-y: auto;
         }
 
         .launcher-item {
             display: flex;
             align-items: center;
-            gap: 14px;
-            padding: 12px 16px;
+            gap: 12px;
+            padding: 10px 14px;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s ease;
         }
@@ -369,10 +476,10 @@
 
         .launcher-grip-avatar {
             position: absolute;
-            top: -30px;
-            right: -45px;
-            width: 100px;
-            height: 120px;
+            top: -25px;
+            right: -40px;
+            width: 90px;
+            height: 110px;
             pointer-events: none;
             opacity: 0;
             transform: scale(0.5) translateY(20px);
@@ -388,12 +495,12 @@
         .yunari-placeholder-badge {
             background: linear-gradient(135deg, #9333ea, #d8b4fe);
             border-radius: 50%;
-            width: 70px;
-            height: 70px;
+            width: 60px;
+            height: 60px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: bold;
             color: #1e1b4b;
             box-shadow: 0 0 20px rgba(192, 132, 252, 0.8);
@@ -403,15 +510,23 @@
 <body>
 
     <div class="galaxy-background"></div>
-    <div class="starfield" id="starfield"></div>
+    <div class="starfield" id="starfieldContainer"></div>
+    <div class="flash-overlay" id="flashOverlay"></div>
 
-    <!-- Background Audio Element -->
     <audio id="bg-music" loop>
         <source src="your-ambient-track.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- Cosmic Desktop Orbit Nodes -->
-    <div class="cosmic-desktop">
+    <!-- Phase 1: Gateway Start Page -->
+    <div class="gateway-container" id="gateway">
+        <div class="quote-box" id="quoteBox">
+            <p class="quote-text" id="quote-display">Loading...</p>
+        </div>
+        <button class="enter-btn" id="enterBtn" onclick="enterSite()">Enter</button>
+    </div>
+
+    <!-- Phase 2: Cosmic Desktop Orbit Nodes (Smaller Planets) -->
+    <div class="cosmic-desktop" id="cosmicDesktop">
         <div class="celestial-node" id="nodeProjects" onclick="openPlanet('projects')">
             <div class="node-title">PROJECTS</div>
             <div class="node-subtitle">Artifacts & Code</div>
@@ -419,12 +534,7 @@
 
         <div class="celestial-node" id="nodeTelemetry" onclick="openPlanet('telemetry')">
             <div class="node-title">TELEMETRY</div>
-            <div class="node-subtitle">Live Hub Status</div>
-        </div>
-
-        <div class="celestial-node" id="nodeAudio" onclick="openPlanet('audio')">
-            <div class="node-title">AUDIO STREAM</div>
-            <div class="node-subtitle">Ambient Soundtracks</div>
+            <div class="node-subtitle">Live Status</div>
         </div>
 
         <div class="celestial-node" id="nodeLore" onclick="openPlanet('lore')">
@@ -433,25 +543,43 @@
         </div>
     </div>
 
-    <!-- Planet / Modal Popup -->
+    <!-- Planet Detail Modal -->
     <div class="planet-modal" id="planetModal">
         <div class="modal-header">
             <span id="modalTitle">// SECTOR DATA</span>
             <button class="modal-close" onclick="closePlanet()">[X]</button>
         </div>
         <div class="modal-body" id="modalBody">
-            Loading sector telemetry...
+            Loading telemetry...
+        </div>
+    </div>
+
+    <!-- Bottom-Right Audio Widget -->
+    <div class="audio-widget" id="audioWidget">
+        <div class="audio-widget-top">
+            <span class="audio-title">// AMBIENT STREAM</span>
+            <div class="soundwave">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+        </div>
+        <div class="audio-controls">
+            <span class="audio-status" id="trackStatus">Status: Paused</span>
+            <button class="audio-btn" id="playPauseBtn" onclick="toggleAudioPlayback()">Play</button>
         </div>
     </div>
 
     <!-- Floating Rounded Taskbar -->
-    <div class="os-taskbar">
+    <div class="os-taskbar" id="osTaskbar">
         <button class="os-start-btn" onclick="toggleLauncher()" title="Yunari OS Menu">
             <span>Y</span>
         </button>
         <div class="taskbar-icon" title="Projects Orbit" onclick="openPlanet('projects')">🪐</div>
-        <div class="taskbar-icon" title="Audio Player" onclick="openPlanet('audio')">🎵</div>
         <div class="taskbar-icon" title="Telemetry Feed" onclick="openPlanet('telemetry')">📡</div>
+        <div class="taskbar-icon" title="Lore Archive" onclick="openPlanet('lore')">✨</div>
     </div>
 
     <!-- OS Launcher Start Menu -->
@@ -467,10 +595,6 @@
                 <div>🚀</div>
                 <div><h4>Project Artifacts</h4><p>Unity games, Blender 3D, and flight sims</p></div>
             </div>
-            <div class="launcher-item" onclick="openPlanet('audio'); toggleLauncher();">
-                <div>🎵</div>
-                <div><h4>Audio Stream</h4><p>Control ambient background soundtracks</p></div>
-            </div>
             <div class="launcher-item" onclick="openPlanet('lore'); toggleLauncher();">
                 <div>✨</div>
                 <div><h4>Astral Lore Archive</h4><p>Explore Yunari's home world and story nodes</p></div>
@@ -483,26 +607,125 @@
     </div>
 
     <script>
-        // Starfield Generator
-        const starfield = document.getElementById('starfield');
-        for (let i = 0; i < 75; i++) {
-            const star = document.createElement('div');
-            star.className = 'star';
-            star.style.left = `${Math.random() * 100}vw`;
-            star.style.top = `${Math.random() * 100}vh`;
-            const size = `${Math.random() * 2.5 + 1.5}px`;
-            star.style.width = size;
-            star.style.height = size;
-            star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
-            starfield.appendChild(star);
-        }
+        window.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('starfieldContainer');
+            const starCount = 100;
+            const starData = [];
+
+            // Generate starfield for Gateway transition
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                
+                star.style.left = `${x}vw`;
+                star.style.top = `${y}vh`;
+
+                const dxCenter = x - 50;
+                const dyCenter = y - 50;
+                const distance = Math.sqrt(dxCenter * dxCenter + dyCenter * dyCenter);
+                const waveDelay = (distance / 70) * 1.1; 
+                star.style.setProperty('--delay', `${waveDelay}s`);
+
+                const size = `${Math.random() * 3 + 1.5}px`;
+                star.style.width = size;
+                star.style.height = size;
+                star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
+                
+                if (container) {
+                    container.appendChild(star);
+                }
+                starData.push({ element: star, xPercent: x, yPercent: y });
+            }
+
+            // Rotating Quotes Engine with Random Start
+            const quotes = [
+                "\"A life without the fear of death isn't living.\"",
+                "\"Creation is just ordering chaos into a melody.\"",
+                "\"Every horizon is just a starting line.\""
+            ];
+            
+            let currentQuote = Math.floor(Math.random() * quotes.length);
+            const quoteEl = document.getElementById('quote-display');
+            if (quoteEl) {
+                quoteEl.innerText = quotes[currentQuote];
+            }
+            
+            const quoteInterval = setInterval(() => {
+                currentQuote = (currentQuote + 1) % quotes.length;
+                if (quoteEl) {
+                    quoteEl.style.opacity = 0;
+                    setTimeout(() => {
+                        quoteEl.innerText = quotes[currentQuote];
+                        quoteEl.style.opacity = 1;
+                    }, 500);
+                }
+            }, 6000);
+
+            // Enter Action & Cinematic Sequence
+            window.enterSite = function() {
+                clearInterval(quoteInterval);
+
+                const btn = document.getElementById('enterBtn');
+                const quoteBox = document.getElementById('quoteBox');
+                const flashOverlay = document.getElementById('flashOverlay');
+                const cosmicDesktop = document.getElementById('cosmicDesktop');
+                const osTaskbar = document.getElementById('osTaskbar');
+                const audioWidget = document.getElementById('audioWidget');
+
+                if (quoteBox) quoteBox.style.opacity = 0;
+                if (btn) btn.classList.add('charging');
+
+                // Calculate exact pixel delta for stars to land on the button
+                const btnRect = btn.getBoundingClientRect();
+                const targetX = btnRect.left + btnRect.width / 2;
+                const targetY = btnRect.top + btnRect.height / 2;
+
+                starData.forEach(data => {
+                    const starX = (window.innerWidth * data.xPercent) / 100;
+                    const starY = (window.innerHeight * data.yPercent) / 100;
+                    data.element.style.setProperty('--dx', `${targetX - starX}px`);
+                    data.element.style.setProperty('--dy', `${targetY - starY}px`);
+                    data.element.style.animation = 'none';
+                });
+
+                void container.offsetWidth;
+
+                // Trigger star wave convergence
+                starData.forEach(data => {
+                    data.element.classList.add('converging');
+                });
+
+                // Trigger white flash at the peak of the wave
+                setTimeout(() => {
+                    if (flashOverlay) flashOverlay.classList.add('active');
+                }, 2800);
+
+                // Reveal Cosmic Desktop, Taskbar, and Audio Widget during the white flash
+                setTimeout(() => {
+                    if (cosmicDesktop) cosmicDesktop.classList.add('active');
+                    if (osTaskbar) osTaskbar.classList.add('active');
+                    if (audioWidget) audioWidget.classList.add('active');
+                    
+                    const gateway = document.getElementById('gateway');
+                    if (gateway) gateway.style.display = 'none';
+                }, 3100);
+
+                // Fade out the white flash
+                setTimeout(() => {
+                    if (flashOverlay) flashOverlay.classList.remove('active');
+                }, 3400);
+            };
+        });
 
         // Toggle OS Start Menu
         function toggleLauncher() {
             document.getElementById('osLauncherMenu').classList.toggle('active');
         }
 
-        // Content Handler for Planets / Modals
+        // Sector Content Handler
         const sectorData = {
             projects: {
                 title: "// SECTOR: PROJECT ARTIFACTS",
@@ -515,27 +738,6 @@
             lore: {
                 title: "// SECTOR: LORE ARCHIVE // YUNARI'S UNIVERSE",
                 html: "<p>\"In the outer sectors where starlight fades, the network remembers everything.\" Explore deep-dive book chapters, character notes, and regional maps of Yunari's home world.</p>"
-            },
-            audio: {
-                title: "// SECTOR: AMBIENT AUDIO STREAM",
-                html: `
-                    <div class="music-player-container">
-                        <div class="track-info">
-                            <h3 id="trackTitle">Helifax Ambient Stream // Sector 01</h3>
-                            <p id="trackStatus">Status: Paused</p>
-                        </div>
-                        <div class="soundwave">
-                            <div class="bar"></div>
-                            <div class="bar"></div>
-                            <div class="bar"></div>
-                            <div class="bar"></div>
-                            <div class="bar"></div>
-                        </div>
-                        <div class="player-controls">
-                            <button class="player-btn" id="playPauseBtn" onclick="toggleAudioPlayback()">Play Stream</button>
-                        </div>
-                    </div>
-                `
             }
         };
 
@@ -548,11 +750,6 @@
                 titleEl.innerText = sectorData[type].title;
                 bodyEl.innerHTML = sectorData[type].html;
                 modal.classList.add('active');
-                
-                // If audio modal opened, sync button text state
-                if(type === 'audio') {
-                    updateAudioUI();
-                }
             }
         }
 
@@ -569,30 +766,15 @@
             if (audio.paused) {
                 audio.play().then(() => {
                     if(statusEl) statusEl.innerText = "Status: Streaming Live";
-                    if(btnEl) btnEl.innerText = "Pause Stream";
+                    if(btnEl) btnEl.innerText = "Pause";
                 }).catch(err => {
                     console.warn("Audio playback blocked or file missing:", err);
-                    if(statusEl) statusEl.innerText = "Status: Stream Offline (File 404)";
+                    if(statusEl) statusEl.innerText = "Status: Stream Offline (404)";
                 });
             } else {
                 audio.pause();
                 if(statusEl) statusEl.innerText = "Status: Paused";
-                if(btnEl) btnEl.innerText = "Play Stream";
-            }
-        }
-
-        function updateAudioUI() {
-            const audio = document.getElementById('bg-music');
-            const statusEl = document.getElementById('trackStatus');
-            const btnEl = document.getElementById('playPauseBtn');
-            if(statusEl && btnEl) {
-                if(!audio.paused) {
-                    statusEl.innerText = "Status: Streaming Live";
-                    btnEl.innerText = "Pause Stream";
-                } else {
-                    statusEl.innerText = "Status: Paused";
-                    btnEl.innerText = "Play Stream";
-                }
+                if(btnEl) btnEl.innerText = "Play";
             }
         }
 
