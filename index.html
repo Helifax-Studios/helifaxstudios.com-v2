@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Helifax Studios // Gateway</title>
+    <title>Yunari OS // Helifax Studios</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
@@ -13,266 +13,382 @@
             overflow: hidden;
             font-family: 'Segoe UI', system-ui, sans-serif;
             color: #ECEFF4;
-            background: transparent;
+            background: #0d0b18;
         }
 
-        /* Shifting Galaxy Gradient Background (Layer 0) */
-        .galaxy-background {
+        /* Ambient Background */
+        .os-background {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, #d8b4fe, #9333ea, #1e1b4b, #311042);
-            background-size: 400% 400%;
-            animation: shiftGradient 18s ease infinite;
-            z-index: 0;
+            background: linear-gradient(135deg, #1e1b4b, #0f0d19, #311042);
+            z-index: -1;
         }
 
-        @keyframes shiftGradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Starfield Container (Layer 1) */
-        .starfield {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        /* Individual Star Styling with Smooth Wave Transitions */
-        .star {
-            position: absolute;
-            background: #ffffff;
-            border-radius: 50%;
-            box-shadow: 0 0 12px 3px rgba(255, 255, 255, 0.95), 0 0 24px 8px rgba(216, 180, 252, 0.8);
-            animation: twinkle var(--duration) ease-in-out infinite alternate;
-            /* Smooth 3.2s transition using pre-calculated pixel deltas */
-            transition: transform 3.2s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s), opacity 3.2s ease var(--delay, 0s);
-        }
-
-        .star.converging {
-            transform: translate(var(--dx), var(--dy)) scale(0.15);
-            opacity: 0.3;
-        }
-
-        @keyframes twinkle {
-            0% { opacity: 0.3; transform: scale(0.8); }
-            100% { opacity: 1; transform: scale(1.3); }
-        }
-
-        /* Gateway Overlay Container (Layer 2) */
-        .gateway-container {
+        /* OS Workspace Container */
+        .os-workspace {
             position: relative;
-            z-index: 2;
+            width: 100vw;
+            height: 100vh;
+            padding: 40px 40px 100px 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            overflow-y: auto;
+        }
+
+        /* Glassmorphism App Windows */
+        .os-window {
+            background: rgba(20, 17, 35, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            padding: 20px;
             display: flex;
             flex-direction: column;
+            min-height: 280px;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .os-window:hover {
+            border-color: rgba(216, 180, 252, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .window-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 8px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: #d8b4fe;
+            letter-spacing: 0.5px;
+        }
+
+        .window-content {
+            flex-grow: 1;
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            line-height: 1.5;
+        }
+
+        /* Floating Rounded Bottom Taskbar */
+        .os-taskbar {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: auto;
+            min-width: 320px;
+            height: 64px;
+            background: rgba(20, 17, 35, 0.8);
+            border: 1px solid rgba(216, 180, 252, 0.2);
+            border-radius: 32px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(147, 51, 234, 0.2);
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            gap: 12px;
+            z-index: 100;
+            animation: floatTaskbar 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatTaskbar {
+            0% { transform: translateX(-50%) translateY(0); }
+            100% { transform: translateX(-50%) translateY(-4px); }
+        }
+
+        /* Yunari OS Start Button */
+        .os-start-btn {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, rgba(147, 51, 234, 0.6), rgba(216, 180, 252, 0.4));
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
             align-items: center;
             justify-content: center;
-            height: 100vh;
-            text-align: center;
-            padding: 20px;
-            background: rgba(15, 13, 25, 0.15);
-            backdrop-filter: blur(2px);
-            transition: opacity 0.5s ease;
-        }
-
-        /* Quote Display */
-        .quote-box {
-            max-width: 600px;
-            margin-bottom: 40px;
-            min-height: 80px;
-            transition: opacity 0.5s ease;
-        }
-
-        .quote-text {
-            font-size: 1.4rem;
-            font-weight: 300;
-            font-style: italic;
-            letter-spacing: 0.5px;
-            text-shadow: 0 2px 12px rgba(0,0,0,0.8);
-            color: #f3e8ff;
-        }
-
-        /* Enter Button */
-        .enter-btn {
+            box-shadow: 0 0 15px rgba(192, 132, 252, 0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             position: relative;
-            padding: 14px 42px;
-            font-size: 1.1rem;
+        }
+
+        .os-start-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 25px rgba(216, 180, 252, 0.8);
+        }
+
+        .os-start-btn span {
+            font-size: 0.75rem;
             font-weight: bold;
-            color: #ffffff;
-            background: linear-gradient(135deg, rgba(161, 131, 199, 0.4), rgba(147, 51, 234, 0.6));
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            border-radius: 30px;
+            color: #fff;
+        }
+
+        /* Taskbar App Icons */
+        .taskbar-icon {
+            width: 42px;
+            height: 42px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
             cursor: pointer;
-            backdrop-filter: blur(8px);
-            box-shadow: 0 0 20px rgba(161, 131, 199, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.3);
-            transition: all 0.3s ease, box-shadow 3.2s ease, transform 3.2s ease, background 3.2s ease;
-            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: all 0.2s ease;
         }
 
-        .enter-btn:hover {
-            transform: scale(1.08);
-            background: linear-gradient(135deg, rgba(161, 131, 199, 0.6), rgba(168, 85, 247, 0.85));
-            box-shadow: 0 0 35px rgba(192, 132, 252, 0.9), inset 0 0 15px rgba(255, 255, 255, 0.6);
+        .taskbar-icon:hover {
+            background: rgba(216, 180, 252, 0.2);
+            transform: translateY(-2px);
         }
 
-        /* Button Charging State */
-        .enter-btn.charging {
-            transform: scale(1.25);
-            background: rgba(255, 255, 255, 1);
-            color: #1e1b4b;
-            box-shadow: 0 0 120px 45px rgba(255, 255, 255, 0.95), inset 0 0 40px rgba(147, 51, 234, 0.95);
-            border-color: #ffffff;
-        }
-
-        /* Blinding White Flash Overlay (Layer 100) */
-        .flash-overlay {
+        /* OS Launcher Menu (Start Menu) */
+        .os-launcher-menu {
             position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #ffffff;
+            bottom: 96px;
+            left: 50%;
+            transform: translateX(-50%) scale(0.95);
+            width: 440px;
+            height: 520px;
+            background: rgba(15, 13, 28, 0.85);
+            border: 1px solid rgba(216, 180, 252, 0.3);
+            border-radius: 20px;
+            backdrop-filter: blur(24px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(147, 51, 234, 0.25);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            z-index: 200;
             opacity: 0;
             pointer-events: none;
-            z-index: 100;
-            transition: opacity 0.6s cubic-bezier(0.1, 0.9, 0.2, 1);
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .flash-overlay.active {
+        .os-launcher-menu.active {
             opacity: 1;
+            transform: translateX(-50%) scale(1);
+            pointer-events: auto;
+        }
+
+        /* Search Bar */
+        .launcher-search {
+            width: 100%;
+            padding: 12px 18px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 0.95rem;
+            outline: none;
+            margin-bottom: 20px;
+            transition: border-color 0.3s ease;
+        }
+
+        .launcher-search:focus {
+            border-color: rgba(216, 180, 252, 0.6);
+            box-shadow: 0 0 10px rgba(216, 180, 252, 0.2);
+        }
+
+        /* App List Section */
+        .launcher-apps {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .launcher-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .launcher-item:hover {
+            background: rgba(216, 180, 252, 0.12);
+            border-color: rgba(216, 180, 252, 0.3);
+            transform: translateX(4px);
+        }
+
+        .launcher-item-icon {
+            font-size: 1.2rem;
+        }
+
+        .launcher-item-info h4 {
+            font-size: 0.95rem;
+            color: #f3e8ff;
+            font-weight: 600;
+        }
+
+        .launcher-item-info p {
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        /* Yunari Grip Avatar (Appears and anchors to the right edge of menu) */
+        .yunari-grip-avatar {
+            position: absolute;
+            top: -30px;
+            right: -45px;
+            width: 100px;
+            height: 120px;
+            pointer-events: none;
+            opacity: 0;
+            transform: scale(0.5) translateY(20px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 210;
+        }
+
+        .os-launcher-menu.active .yunari-grip-avatar {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+
+        .yunari-grip-avatar img, .yunari-grip-avatar div {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.6));
+        }
+
+        .yunari-placeholder-badge {
+            background: linear-gradient(135deg, #9333ea, #d8b4fe);
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: #1e1b4b;
+            box-shadow: 0 0 20px rgba(192, 132, 252, 0.8);
         }
     </style>
 </head>
 <body>
 
-    <div class="galaxy-background"></div>
-    <div class="starfield" id="starfieldContainer"></div>
-    <div class="flash-overlay" id="flashOverlay"></div>
+    <div class="os-background"></div>
 
-    <audio id="bg-music" loop>
-        <source src="your-ambient-track.mp3" type="audio/mpeg">
-    </audio>
-
-    <div class="gateway-container" id="gateway">
-        <div class="quote-box" id="quoteBox">
-            <p class="quote-text" id="quote-display">Loading...</p>
+    <!-- OS Workspace Grid -->
+    <div class="os-workspace">
+        <div class="os-window">
+            <div class="window-header"><span>// RECOVERED ARTIFACTS</span><span>[PROJECTS]</span></div>
+            <div class="window-content">
+                Custom 2D platformers built in Unity URP, Blender 3D character rigs, and flight simulation hardware configurations.
+            </div>
         </div>
-        <button class="enter-btn" id="enterBtn" onclick="enterSite()">Enter</button>
+
+        <div class="os-window">
+            <div class="window-header"><span>// SYSTEM TELEMETRY</span><span>[LIVE STATUS]</span></div>
+            <div class="window-content">
+                Synchronizing with live GitHub data pipeline (`data.json`). Status: Operating normally on Nobara Linux.
+            </div>
+        </div>
+
+        <div class="os-window">
+            <div class="window-header"><span>// LORE FRAGMENT</span><span>[ARCHIVE 01]</span></div>
+            <div class="window-content">
+                "In the outer sectors where starlight fades, the remnants of the old network whisper across the void..."
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Rounded Taskbar -->
+    <div class="os-taskbar">
+        <!-- Yunari Start Button / Menu Toggle -->
+        <button class="os-start-btn" onclick="toggleLauncher()" title="Yunari OS Menu">
+            <span>Y</span>
+        </button>
+        
+        <!-- Dock App Shortcuts -->
+        <div class="taskbar-icon" title="Projects">📁</div>
+        <div class="taskbar-icon" title="Astral Map" onclick="toggleWorldMap()">🗺️</div>
+        <div class="taskbar-icon" title="Terminal">💻</div>
+    </div>
+
+    <!-- OS Launcher Start Menu -->
+    <div class="os-launcher-menu" id="osLauncherMenu">
+        <!-- Yunari Gripping / Leaning on the Menu Edge -->
+        <div class="yunari-grip-avatar">
+            <div class="yunari-placeholder-badge">YUNARI</div>
+            <!-- Once commissioned, replace div with: <img src="yunari-grip.png" alt="Yunari"> -->
+        </div>
+
+        <input type="text" class="launcher-search" placeholder="Search system archives, projects, lore..." oninput="filterApps(this)">
+        
+        <div class="launcher-apps" id="launcherAppsList">
+            <div class="launcher-item" onclick="alert('Opening Projects...')">
+                <div class="launcher-item-icon">🚀</div>
+                <div class="launcher-item-info">
+                    <h4>Project Artifacts</h4>
+                    <p>Unity games, Blender 3D art, and flight sims</p>
+                </div>
+            </div>
+            <div class="launcher-item" onclick="toggleWorldMap()">
+                <div class="launcher-item-icon">✨</div>
+                <div class="launcher-item-info">
+                    <h4>Astral World Map</h4>
+                    <p>Explore Yunari's home world and book lore</p>
+                </div>
+            </div>
+            <div class="launcher-item" onclick="alert('Opening Terminal...')">
+                <div class="launcher-item-icon">⚡</div>
+                <div class="launcher-item-info">
+                    <h4>GitHub Live Telemetry</h4>
+                    <p>View real-time updates from `data.json` pipeline</p>
+                </div>
+            </div>
+            <div class="launcher-item" onclick="alert('Opening Audio Logs...')">
+                <div class="launcher-item-icon">🎵</div>
+                <div class="launcher-item-info">
+                    <h4>Audio Logs & Ambient Stream</h4>
+                    <p>Manage background soundtrack and playlists</p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        window.addEventListener('DOMContentLoaded', () => {
-            const container = document.getElementById('starfieldContainer');
-            const starCount = 100;
-            const starData = [];
+        // Toggle OS Start Menu & Yunari Grip Animation
+        function toggleLauncher() {
+            const menu = document.getElementById('osLauncherMenu');
+            menu.classList.toggle('active');
+        }
 
-            for (let i = 0; i < starCount; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                
-                const x = Math.random() * 100; // percentage vw
-                const y = Math.random() * 100; // percentage vh
-                
-                star.style.left = `${x}vw`;
-                star.style.top = `${y}vh`;
-
-                // Calculate distance from screen center for the wave delay effect
-                const dxCenter = x - 50;
-                const dyCenter = y - 50;
-                const distance = Math.sqrt(dxCenter * dxCenter + dyCenter * dyCenter);
-                const waveDelay = (distance / 70) * 1.1; 
-                star.style.setProperty('--delay', `${waveDelay}s`);
-
-                const size = `${Math.random() * 3 + 1.5}px`;
-                star.style.width = size;
-                star.style.height = size;
-                star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
-                
-                if (container) {
-                    container.appendChild(star);
-                }
-
-                starData.push({ element: star, xPercent: x, yPercent: y });
-            }
-
-            // Rotating Quotes Engine with Random Start
-            const quotes = [
-                "\"A life without the fear of death isn't living.\"",
-                "\"Creation is just ordering chaos into a melody.\"",
-                "\"Every horizon is just a starting line.\""
-            ];
+        // Live Search Filter for Menu Items
+        function filterApps(input) {
+            const query = input.value.toLowerCase();
+            const items = document.querySelectorAll('.launcher-item');
             
-            let currentQuote = Math.floor(Math.random() * quotes.length);
-            const quoteEl = document.getElementById('quote-display');
-            if (quoteEl) {
-                quoteEl.innerText = quotes[currentQuote];
-            }
-            
-            const quoteInterval = setInterval(() => {
-                currentQuote = (currentQuote + 1) % quotes.length;
-                if (quoteEl) {
-                    quoteEl.style.opacity = 0;
-                    setTimeout(() => {
-                        quoteEl.innerText = quotes[currentQuote];
-                        quoteEl.style.opacity = 1;
-                    }, 500);
+            items.forEach(item => {
+                const text = item.innerText.toLowerCase();
+                if (text.includes(query)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
                 }
-            }, 6000);
+            });
+        }
 
-            // Enter Action
-            window.enterSite = function() {
-                clearInterval(quoteInterval);
-
-                const audio = document.getElementById('bg-music');
-                if (audio) {
-                    audio.play().catch(err => {
-                        console.warn("[Audio] Playback skipped or file missing:", err);
-                    });
-                }
-
-                const btn = document.getElementById('enterBtn');
-                const quoteBox = document.getElementById('quoteBox');
-                const flashOverlay = document.getElementById('flashOverlay');
-
-                if (quoteBox) quoteBox.style.opacity = 0;
-                if (btn) btn.classList.add('charging');
-
-                // Dynamically find the exact center coordinates of the Enter button
-                const btnRect = btn.getBoundingClientRect();
-                const targetX = btnRect.left + btnRect.width / 2;
-                const targetY = btnRect.top + btnRect.height / 2;
-
-                // Calculate exact pixel delta for each star to land precisely on the button
-                starData.forEach(data => {
-                    const starX = (window.innerWidth * data.xPercent) / 100;
-                    const starY = (window.innerHeight * data.yPercent) / 100;
-                    const deltaX = targetX - starX;
-                    const deltaY = targetY - starY;
-
-                    data.element.style.setProperty('--dx', `${deltaX}px`);
-                    data.element.style.setProperty('--dy', `${deltaY}px`);
-                    data.element.style.animation = 'none'; // Stop twinkling during flight
-                });
-
-                // Force browser reflow so the transition registers properly
-                void container.offsetWidth;
-
-                // Trigger smooth wave convergence into the button
-                starData.forEach(data => {
-                    data.element.classList.add('converging');
-                });
-
-                // Trigger the white flash right as the outer wave finishes sweeping in
-                setTimeout(() => {
-                    if (flashOverlay) flashOverlay.classList.add('active');
-                }, 2800);
-
-                // Hide gateway container after flash peak
-                setTimeout(() => {
-                    const gateway = document.getElementById('gateway');
-                    if (gateway) gateway.style.display = 'none';
-                }, 3400);
-            };
-        });
+        // Placeholder function for Astral Map
+        function toggleWorldMap() {
+            alert("Opening Astral World Map Overlay...");
+        }
     </script>
 </body>
 </html>
