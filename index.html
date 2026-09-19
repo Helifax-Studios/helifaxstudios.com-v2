@@ -68,8 +68,8 @@
         /* Planetary / Stellar Info Orbs */
         .celestial-node {
             position: absolute;
-            width: 180px;
-            height: 180px;
+            width: 170px;
+            height: 170px;
             background: radial-gradient(circle at 30% 30%, rgba(216, 180, 252, 0.4), rgba(76, 29, 149, 0.8) 70%, rgba(15, 13, 25, 0.9));
             border: 1px solid rgba(255, 255, 255, 0.25);
             border-radius: 50%;
@@ -93,10 +93,11 @@
             z-index: 10;
         }
 
-        /* Unique Orbit Positions for each node */
-        #nodeProjects { top: 22%; left: 18%; animation-delay: 0s; }
-        #nodeTelemetry { top: 25%; right: 18%; animation-delay: 2s; }
-        #nodeLore { bottom: 25%; left: 38%; animation-delay: 4s; width: 200px; height: 200px; }
+        /* Orbit Positions */
+        #nodeProjects { top: 20%; left: 15%; animation-delay: 0s; }
+        #nodeTelemetry { top: 22%; right: 15%; animation-delay: 2s; }
+        #nodeAudio { bottom: 25%; left: 18%; animation-delay: 3s; }
+        #nodeLore { bottom: 22%; right: 18%; animation-delay: 4s; width: 190px; height: 190px; }
 
         @keyframes floatOrb {
             0% { transform: translateY(0) rotate(0deg); }
@@ -104,7 +105,7 @@
         }
 
         .node-title {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: bold;
             color: #f3e8ff;
             text-shadow: 0 2px 8px rgba(0,0,0,0.8);
@@ -112,19 +113,20 @@
         }
 
         .node-subtitle {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: #d8b4fe;
             text-shadow: 0 1px 4px rgba(0,0,0,0.8);
         }
 
-        /* Detail Modal Popup (When clicking a planet/orb) */
+        /* Detail Modal Popup */
+        v { display: none; } /* placeholder */
         .planet-modal {
             position: fixed;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%) scale(0.9);
             width: 550px;
             max-width: 90vw;
-            background: rgba(15, 13, 28, 0.85);
+            background: rgba(15, 13, 28, 0.9);
             border: 1px solid rgba(216, 180, 252, 0.4);
             border-radius: 20px;
             backdrop-filter: blur(24px);
@@ -146,7 +148,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             padding-bottom: 10px;
             color: #d8b4fe;
@@ -167,7 +169,76 @@
             line-height: 1.6;
         }
 
-        /* Floating Rounded Bottom Taskbar */
+        /* Music Player Specific Styles Inside Modal */
+        .music-player-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+            text-align: center;
+        }
+
+        .track-info h3 {
+            font-size: 1.1rem;
+            color: #f3e8ff;
+            margin-bottom: 4px;
+        }
+
+        .track-info p {
+            font-size: 0.85rem;
+            color: #b892ff;
+        }
+
+        /* Soundwave Visualizer Bars */
+        .soundwave {
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            height: 40px;
+            margin: 10px 0;
+        }
+
+        .bar {
+            width: 5px;
+            background: #d8b4fe;
+            border-radius: 3px;
+            animation: pulseBar 1.2s ease-in-out infinite alternate;
+        }
+
+        .bar:nth-child(2) { animation-delay: 0.2s; height: 60%; }
+        .bar:nth-child(3) { animation-delay: 0.4s; height: 90%; }
+        .bar:nth-child(4) { animation-delay: 0.1s; height: 40%; }
+        .bar:nth-child(5) { animation-delay: 0.5s; height: 75%; }
+
+        @keyframes pulseBar {
+            0% { height: 15%; opacity: 0.4; }
+            100% { height: 100%; opacity: 1; }
+        }
+
+        .player-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .player-btn {
+            padding: 10px 24px;
+            background: linear-gradient(135deg, rgba(147, 51, 234, 0.6), rgba(216, 180, 252, 0.4));
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .player-btn:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, rgba(147, 51, 234, 0.9), rgba(216, 180, 252, 0.7));
+            box-shadow: 0 0 15px rgba(216, 180, 252, 0.6);
+        }
+
+        /* Floating Rounded Taskbar */
         .os-taskbar {
             position: fixed;
             bottom: 20px;
@@ -194,7 +265,6 @@
             100% { transform: translateX(-50%) translateY(-4px); }
         }
 
-        /* Yunari OS Start Button */
         .os-start-btn {
             width: 48px;
             height: 48px;
@@ -206,22 +276,12 @@
             align-items: center;
             justify-content: center;
             box-shadow: 0 0 15px rgba(192, 132, 252, 0.4);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            position: relative;
+            transition: transform 0.3s ease;
         }
 
-        .os-start-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 25px rgba(216, 180, 252, 0.8);
-        }
+        .os-start-btn:hover { transform: scale(1.1); }
+        .os-start-btn span { font-size: 0.8rem; font-weight: bold; color: #fff; }
 
-        .os-start-btn span {
-            font-size: 0.8rem;
-            font-weight: bold;
-            color: #fff;
-        }
-
-        /* Taskbar App Icons */
         .taskbar-icon {
             width: 42px;
             height: 42px;
@@ -241,7 +301,7 @@
             transform: translateY(-2px);
         }
 
-        /* OS Launcher Menu (Start Menu) */
+        /* OS Launcher Menu */
         .os-launcher-menu {
             position: fixed;
             bottom: 96px;
@@ -345,7 +405,12 @@
     <div class="galaxy-background"></div>
     <div class="starfield" id="starfield"></div>
 
-    <!-- Cosmic Desktop Orbit Nodes (Planets / Stellar Orbs) -->
+    <!-- Background Audio Element -->
+    <audio id="bg-music" loop>
+        <source src="your-ambient-track.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Cosmic Desktop Orbit Nodes -->
     <div class="cosmic-desktop">
         <div class="celestial-node" id="nodeProjects" onclick="openPlanet('projects')">
             <div class="node-title">PROJECTS</div>
@@ -357,16 +422,21 @@
             <div class="node-subtitle">Live Hub Status</div>
         </div>
 
+        <div class="celestial-node" id="nodeAudio" onclick="openPlanet('audio')">
+            <div class="node-title">AUDIO STREAM</div>
+            <div class="node-subtitle">Ambient Soundtracks</div>
+        </div>
+
         <div class="celestial-node" id="nodeLore" onclick="openPlanet('lore')">
             <div class="node-title">LORE ARCHIVE</div>
             <div class="node-subtitle">Yunari's Universe</div>
         </div>
     </div>
 
-    <!-- Planet Detail Modal Overlay -->
+    <!-- Planet / Modal Popup -->
     <div class="planet-modal" id="planetModal">
         <div class="modal-header">
-            <span id="modalTitle">// PLANET DATA</span>
+            <span id="modalTitle">// SECTOR DATA</span>
             <button class="modal-close" onclick="closePlanet()">[X]</button>
         </div>
         <div class="modal-body" id="modalBody">
@@ -380,7 +450,7 @@
             <span>Y</span>
         </button>
         <div class="taskbar-icon" title="Projects Orbit" onclick="openPlanet('projects')">🪐</div>
-        <div class="taskbar-icon" title="Astral World Map">🗺️</div>
+        <div class="taskbar-icon" title="Audio Player" onclick="openPlanet('audio')">🎵</div>
         <div class="taskbar-icon" title="Telemetry Feed" onclick="openPlanet('telemetry')">📡</div>
     </div>
 
@@ -397,10 +467,14 @@
                 <div>🚀</div>
                 <div><h4>Project Artifacts</h4><p>Unity games, Blender 3D, and flight sims</p></div>
             </div>
+            <div class="launcher-item" onclick="openPlanet('audio'); toggleLauncher();">
+                <div>🎵</div>
+                <div><h4>Audio Stream</h4><p>Control ambient background soundtracks</p></div>
+            </div>
             <div class="launcher-item" onclick="openPlanet('lore'); toggleLauncher();">
                 <div>✨</div>
-                <div><h4>Astral Lore Archive</h4><p>Explore Yunari's home world and story nodes</p>
-            </div></div>
+                <div><h4>Astral Lore Archive</h4><p>Explore Yunari's home world and story nodes</p></div>
+            </div>
             <div class="launcher-item" onclick="openPlanet('telemetry'); toggleLauncher();">
                 <div>⚡</div>
                 <div><h4>Live Telemetry</h4><p>Real-time updates from Nobara data pipeline</p></div>
@@ -411,7 +485,7 @@
     <script>
         // Starfield Generator
         const starfield = document.getElementById('starfield');
-        for (let i =0; i < 75; i++) {
+        for (let i = 0; i < 75; i++) {
             const star = document.createElement('div');
             star.className = 'star';
             star.style.left = `${Math.random() * 100}vw`;
@@ -428,19 +502,40 @@
             document.getElementById('osLauncherMenu').classList.toggle('active');
         }
 
-        // Planet Modal Content Handler
-        const planetData = {
+        // Content Handler for Planets / Modals
+        const sectorData = {
             projects: {
                 title: "// SECTOR: PROJECT ARTIFACTS",
-                content: "Displaying your C# Avalonia desktop tools, Unity URP 2D platformers, and Microsoft Flight Simulator emergency procedure setups. Click any artifact to inspect source code and build packages."
+                html: "<p>Displaying your C# Avalonia desktop tools, Unity URP 2D platformers, and Microsoft Flight Simulator emergency procedure setups. Click any artifact to inspect source code and build packages.</p>"
             },
             telemetry: {
                 title: "// SECTOR: LIVE SYSTEM TELEMETRY",
-                content: "Synchronizing directly with GitHub REST API pipeline (`data.json`). Operating environment: Nobara Linux (KDE Plasma/Wayland). Status: Optimal."
+                html: "<p>Synchronizing directly with GitHub REST API pipeline (`data.json`). Operating environment: Nobara Linux (KDE Plasma/Wayland). Status: Optimal.</p>"
             },
             lore: {
                 title: "// SECTOR: LORE ARCHIVE // YUNARI'S UNIVERSE",
-                content: "\"In the outer sectors where starlight fades, the network remembers everything.\" Explore deep-dive book chapters, character notes, and regional maps of Yunari's home world."
+                html: "<p>\"In the outer sectors where starlight fades, the network remembers everything.\" Explore deep-dive book chapters, character notes, and regional maps of Yunari's home world.</p>"
+            },
+            audio: {
+                title: "// SECTOR: AMBIENT AUDIO STREAM",
+                html: `
+                    <div class="music-player-container">
+                        <div class="track-info">
+                            <h3 id="trackTitle">Helifax Ambient Stream // Sector 01</h3>
+                            <p id="trackStatus">Status: Paused</p>
+                        </div>
+                        <div class="soundwave">
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                        </div>
+                        <div class="player-controls">
+                            <button class="player-btn" id="playPauseBtn" onclick="toggleAudioPlayback()">Play Stream</button>
+                        </div>
+                    </div>
+                `
             }
         };
 
@@ -449,15 +544,56 @@
             const titleEl = document.getElementById('modalTitle');
             const bodyEl = document.getElementById('modalBody');
             
-            if (planetData[type]) {
-                titleEl.innerText = planetData[type].title;
-                bodyEl.innerText = planetData[type].content;
+            if (sectorData[type]) {
+                titleEl.innerText = sectorData[type].title;
+                bodyEl.innerHTML = sectorData[type].html;
                 modal.classList.add('active');
+                
+                // If audio modal opened, sync button text state
+                if(type === 'audio') {
+                    updateAudioUI();
+                }
             }
         }
 
         function closePlanet() {
             document.getElementById('planetModal').classList.remove('active');
+        }
+
+        // Audio Playback Controls
+        function toggleAudioPlayback() {
+            const audio = document.getElementById('bg-music');
+            const statusEl = document.getElementById('trackStatus');
+            const btnEl = document.getElementById('playPauseBtn');
+
+            if (audio.paused) {
+                audio.play().then(() => {
+                    if(statusEl) statusEl.innerText = "Status: Streaming Live";
+                    if(btnEl) btnEl.innerText = "Pause Stream";
+                }).catch(err => {
+                    console.warn("Audio playback blocked or file missing:", err);
+                    if(statusEl) statusEl.innerText = "Status: Stream Offline (File 404)";
+                });
+            } else {
+                audio.pause();
+                if(statusEl) statusEl.innerText = "Status: Paused";
+                if(btnEl) btnEl.innerText = "Play Stream";
+            }
+        }
+
+        function updateAudioUI() {
+            const audio = document.getElementById('bg-music');
+            const statusEl = document.getElementById('trackStatus');
+            const btnEl = document.getElementById('playPauseBtn');
+            if(statusEl && btnEl) {
+                if(!audio.paused) {
+                    statusEl.innerText = "Status: Streaming Live";
+                    btnEl.innerText = "Pause Stream";
+                } else {
+                    statusEl.innerText = "Status: Paused";
+                    btnEl.innerText = "Play Stream";
+                }
+            }
         }
 
         // Launcher search filter
