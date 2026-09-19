@@ -612,7 +612,7 @@
             const starCount = 100;
             const starData = [];
 
-            // Generate starfield for Gateway transition
+            // Generate initial gateway starfield
             for (let i = 0; i < starCount; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
@@ -711,6 +711,20 @@
                     
                     const gateway = document.getElementById('gateway');
                     if (gateway) gateway.style.display = 'none';
+
+                    // RESET STARS: Clear out the converged dots and spawn a fresh background starfield
+                    container.innerHTML = '';
+                    for (let i = 0; i < 90; i++) {
+                        const freshStar = document.createElement('div');
+                        freshStar.className = 'star';
+                        freshStar.style.left = `${Math.random() * 100}vw`;
+                        freshStar.style.top = `${Math.random() * 100}vh`;
+                        const size = `${Math.random() * 2.5 + 1.2}px`;
+                        freshStar.style.width = size;
+                        freshStar.style.height = size;
+                        freshStar.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
+                        container.appendChild(freshStar);
+                    }
                 }, 3100);
 
                 // Fade out the white flash
